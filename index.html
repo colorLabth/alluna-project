@@ -74,7 +74,7 @@
         </button>
 
         <!-- Cart Dropdown -->
-        <div x-show="isCartOpen" x-transition class="absolute right-0 mt-2 w-80 bg-white border border-gray-200 rounded-md shadow-lg z-40">
+        <div x-show="isCartOpen" x-transition x-cloak class="absolute right-0 mt-2 w-80 bg-white border border-gray-200 rounded-md shadow-lg z-40">
           <div class="p-4">
             <template x-if="cartItems.length === 0">
               <p class="text-center text-gray-500">ไม่มีสินค้าในตะกร้า</p>
@@ -127,7 +127,7 @@
 </div>
 
 <!-- Mobile Search -->
-<div class="md:hidden bg-white border-t border-gray-200" x-show="isMenuOpen" x-transition>
+<div class="md:hidden bg-white border-t border-gray-200" x-show="isMenuOpen" x-transition x-cloak>
   <div class="p-3">
     <input
       type="text"
