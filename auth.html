@@ -64,16 +64,46 @@
             border-radius: 0 0 0 100%;
             z-index: -1;
         }
-        .decoration-bottom {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 200px;
-            height: 200px;
-            background: linear-gradient(315deg, #ec4899 0%, rgba(255, 255, 255, 0) 70%);
-            border-radius: 0 100% 0 0;
-            z-index: -1;
-        }
+        .decoration-top {
+    position: fixed; /* เปลี่ยนจาก absolute เป็น fixed */
+    top: 0;
+    right: 0;
+    width: 300px; /* เพิ่มขนาด */
+    height: 300px; /* เพิ่มขนาด */
+    background: radial-gradient(circle at center, #ec4899 0%, rgba(255, 255, 255, 0) 70%);
+    border-radius: 50%;
+    z-index: -1;
+    pointer-events: none;
+    opacity: 0.7; /* เพิ่มความโปร่งใส */
+}
+
+.decoration-bottom {
+    position: fixed; /* เปลี่ยนจาก absolute เป็น fixed */
+    bottom: 0;
+    left: 0;
+    width: 300px; /* เพิ่มขนาด */
+    height: 300px; /* เพิ่มขนาด */
+    background: radial-gradient(circle at center, #ec4899 0%, rgba(255, 255, 255, 0) 70%);
+    border-radius: 50%;
+    z-index: -1;
+    pointer-events: none;
+    opacity: 0.7; /* เพิ่มความโปร่งใส */
+}
+
+/* เพิ่มจุดเพิ่มเติมเพื่อความสวยงาม */
+.decoration-middle {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 200px;
+    height: 200px;
+    background: radial-gradient(circle at center, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0) 70%);
+    border-radius: 50%;
+    z-index: -1;
+    pointer-events: none;
+    opacity: 0.5;
+}
         .divider {
             display: flex;
             align-items: center;
@@ -98,6 +128,7 @@
 <body class="p-4 md:p-0">
     <div class="decoration-top"></div>
     <div class="decoration-bottom"></div>
+    <div class="decoration-middle"></div>
     
     <div class="container mx-auto max-w-md py-12">
         <div class="text-center mb-8">
@@ -123,7 +154,7 @@
                             <input type="checkbox" id="remember" class="mr-2">
                             <label for="remember" class="text-sm text-gray-600">จดจำฉัน</label>
                         </div>
-                        <a href="#" id="forgotPasswordLink" class="text-sm text-pink-600 hover:text-pink-700">ลืมรหัสผ่าน?</a>
+                        <a href="forgotPassword" id="forgotPasswordLink" class="text-sm text-pink-600 hover:text-pink-700">ลืมรหัสผ่าน?</a>
                     </div>
                     <button type="submit" class="btn-primary w-full py-3 rounded-lg text-white font-medium">เข้าสู่ระบบ</button>
                 </form>
