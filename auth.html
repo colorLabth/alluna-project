@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบสมาชิก</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #ffe0e9 0%, #ffffff 100%);
+            font-family: 'Prompt', sans-serif;
+            min-height: 100vh;
+        }
+        .card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(236, 72, 153, 0.2);
+            border: 1px solid rgba(236, 72, 153, 0.3);
+            transition: all 0.3s ease;
+        }
+        .card:hover {
+            box-shadow: 0 15px 30px rgba(236, 72, 153, 0.3);
+            transform: translateY(-5px);
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #ec4899 0%, #db2777 100%);
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #db2777 0%, #be185d 100%);
+            transform: translateY(-2px);
+        }
+        .btn-secondary {
+            border: 2px solid #ec4899;
+            color: #ec4899;
+            transition: all 0.3s ease;
+        }
+        .btn-secondary:hover {
+            background-color: rgba(236, 72, 153, 0.1);
+            transform: translateY(-2px);
+        }
+        .input-field {
+            border: 2px solid #fbb6ce;
+            transition: all 0.3s ease;
+        }
+        .input-field:focus {
+            border-color: #ec4899;
+            box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.25);
+        }
+        .form-container {
+            display: none;
+        }
+        .form-container.active {
+            display: block;
+        }
+        .decoration-top {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 200px;
+            height: 200px;
+            background: linear-gradient(135deg, #ec4899 0%, rgba(255, 255, 255, 0) 70%);
+            border-radius: 0 0 0 100%;
+            z-index: -1;
+        }
+        .decoration-bottom {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 200px;
+            height: 200px;
+            background: linear-gradient(315deg, #ec4899 0%, rgba(255, 255, 255, 0) 70%);
+            border-radius: 0 100% 0 0;
+            z-index: -1;
+        }
+        .divider {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            color: #9ca3af;
+        }
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .divider::before {
+            margin-right: 1rem;
+        }
+        .divider::after {
+            margin-left: 1rem;
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body class="p-4 md:p-0">
+    <div class="decoration-top"></div>
+    <div class="decoration-bottom"></div>
+    
+    <div class="container mx-auto max-w-md py-12">
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-pink-600 mb-2">ยินดีต้อนรับ</h1>
+            <p class="text-gray-600">กรุณาเข้าสู่ระบบหรือสมัครสมาชิกเพื่อดำเนินการต่อ</p>
+        </div>
+        
+        <div class="card p-6">
+            <!-- Login Form -->
+            <div id="loginForm" class="form-container active">
+                <h2 class="text-2xl font-semibold text-center text-gray-800 mb-6">เข้าสู่ระบบ</h2>
+                <form>
+                    <div class="mb-4">
+                        <label for="loginEmail" class="block text-gray-700 mb-2">อีเมล</label>
+                        <input type="email" id="loginEmail" class="input-field w-full px-4 py-3 rounded-lg" placeholder="กรอกอีเมลของคุณ" required>
+                    </div>
+                    <div class="mb-4">
+                        <label for="loginPassword" class="block text-gray-700 mb-2">รหัสผ่าน</label>
+                        <input type="password" id="loginPassword" class="input-field w-full px-4 py-3 rounded-lg" placeholder="กรอกรหัสผ่านของคุณ" required>
+                    </div>
+                    <div class="flex justify-between items-center mb-6">
+                        <div class="flex items-center">
+                            <input type="checkbox" id="remember" class="mr-2">
+                            <label for="remember" class="text-sm text-gray-600">จดจำฉัน</label>
+                        </div>
+                        <a href="#" id="forgotPasswordLink" class="text-sm text-pink-600 hover:text-pink-700">ลืมรหัสผ่าน?</a>
+                    </div>
+                    <button type="submit" class="btn-primary w-full py-3 rounded-lg text-white font-medium">เข้าสู่ระบบ</button>
+                </form>
+                
+                <div class="mt-6">
+                    <div class="divider text-sm">หรือเข้าสู่ระบบด้วย</div>
+                    <div class="flex justify-center space-x-4 mt-4">
+                        <button class="flex items-center justify-center w-12 h-12 rounded-full border border-gray-300 hover:bg-gray-50">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="#4285F4"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+                        </button>
+                        <button class="flex items-center justify-center w-12 h-12 rounded-full border border-gray-300 hover:bg-gray-50">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="#1877F2"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                        </button>
+                        <button class="flex items-center justify-center w-12 h-12 rounded-full border border-gray-300 hover:bg-gray-50">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="#000000"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="mt-6 text-center">
+                    <p class="text-gray-600">ยังไม่มีบัญชีผู้ใช้? <a href="#" id="showRegisterForm" class="text-pink-600 font-medium hover:text-pink-700">สมัครสมาชิก</a></p>
+                </div>
+            </div>
+            
+            <!-- Register Form -->
+            <div id="registerForm" class="form-container">
+                <h2 class="text-2xl font-semibold text-center text-gray-800 mb-6">สมัครสมาชิก</h2>
+                <form>
+                    <div class="mb-4">
+                        <label for="registerName" class="block text-gray-700 mb-2">ชื่อ-นามสกุล</label>
+                        <input type="text" id="registerName" class="input-field w-full px-4 py-3 rounded-lg" placeholder="กรอกชื่อ-นามสกุลของคุณ" required>
+                    </div>
+                    <div class="mb-4">
+                        <label for="registerEmail" class="block text-gray-700 mb-2">อีเมล</label>
+                        <input type="email" id="registerEmail" class="input-field w-full px-4 py-3 rounded-lg" placeholder="กรอกอีเมลของคุณ" required>
+                    </div>
+                    <div class="mb-4">
+                        <label for="registerPhone" class="block text-gray-700 mb-2">เบอร์โทรศัพท์</label>
+                        <input type="tel" id="registerPhone" class="input-field w-full px-4 py-3 rounded-lg" placeholder="กรอกเบอร์โทรศัพท์ของคุณ" required>
+                    </div>
+                    <div class="mb-4">
+                        <label for="registerPassword" class="block text-gray-700 mb-2">รหัสผ่าน</label>
+                        <input type="password" id="registerPassword" class="input-field w-full px-4 py-3 rounded-lg" placeholder="กรอกรหัสผ่านของคุณ" required>
+                    </div>
+                    <div class="mb-6">
+                        <label for="confirmPassword" class="block text-gray-700 mb-2">ยืนยันรหัสผ่าน</label>
+                        <input type="password" id="confirmPassword" class="input-field w-full px-4 py-3 rounded-lg" placeholder="กรอกรหัสผ่านอีกครั้ง" required>
+                    </div>
+                    <div class="mb-6">
+                        <div class="flex items-center">
+                            <input type="checkbox" id="terms" class="mr-2" required>
+                            <label for="terms" class="text-sm text-gray-600">ฉันยอมรับ <a href="#" class="text-pink-600">เงื่อนไขการใช้งาน</a> และ <a href="#" class="text-pink-600">นโยบายความเป็นส่วนตัว</a></label>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-primary w-full py-3 rounded-lg text-white font-medium">สมัครสมาชิก</button>
+                </form>
+                
+                <div class="mt-6 text-center">
+                    <p class="text-gray-600">มีบัญชีผู้ใช้แล้ว? <a href="#" id="showLoginForm" class="text-pink-600 font-medium hover:text-pink-700">เข้าสู่ระบบ</a></p>
+                </div>
+            </div>
+            
+            <!-- Forgot Password Form -->
+            <div id="forgotPasswordForm" class="form-container">
+                <div class="text-center mb-6">
+                    <h2 class="text-2xl font-semibold text-gray-800">ลืมรหัสผ่าน</h2>
+                    <p class="text-gray-600 text-sm mt-2">กรุณากรอกอีเมลที่ใช้ลงทะเบียน เราจะส่งลิงก์สำหรับตั้งรหัสผ่านใหม่ให้คุณ</p>
+                </div>
+                <form>
+                    <div class="mb-6">
+                        <label for="forgotEmail" class="block text-gray-700 mb-2">อีเมล</label>
+                        <input type="email" id="forgotEmail" class="input-field w-full px-4 py-3 rounded-lg" placeholder="กรอกอีเมลของคุณ" required>
+                    </div>
+                    <button type="submit" class="btn-primary w-full py-3 rounded-lg text-white font-medium">ส่งลิงก์รีเซ็ตรหัสผ่าน</button>
+                    <button type="button" id="backToLogin" class="w-full py-3 rounded-lg text-pink-600 font-medium mt-4 border border-pink-200 hover:bg-pink-50">กลับไปหน้าเข้าสู่ระบบ</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const loginForm = document.getElementById('loginForm');
+            const registerForm = document.getElementById('registerForm');
+            const forgotPasswordForm = document.getElementById('forgotPasswordForm');
+            const showRegisterForm = document.getElementById('showRegisterForm');
+            const showLoginForm = document.getElementById('showLoginForm');
+            const forgotPasswordLink = document.getElementById('forgotPasswordLink');
+            const backToLogin = document.getElementById('backToLogin');
+            
+            // Show register form
+            showRegisterForm.addEventListener('click', function(e) {
+                e.preventDefault();
+                loginForm.classList.remove('active');
+                registerForm.classList.add('active');
+                forgotPasswordForm.classList.remove('active');
+            });
+            
+            // Show login form
+            showLoginForm.addEventListener('click', function(e) {
+                e.preventDefault();
+                registerForm.classList.remove('active');
+                loginForm.classList.add('active');
+                forgotPasswordForm.classList.remove('active');
+            });
+            
+            // Show forgot password form
+            forgotPasswordLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                loginForm.classList.remove('active');
+                registerForm.classList.remove('active');
+                forgotPasswordForm.classList.add('active');
+            });
+            
+            // Back to login from forgot password
+            backToLogin.addEventListener('click', function() {
+                forgotPasswordForm.classList.remove('active');
+                loginForm.classList.add('active');
+            });
+            
+            // Form submissions
+            const forms = document.querySelectorAll('form');
+            forms.forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    // Here you would normally send the form data to your server
+                    alert('ส่งข้อมูลสำเร็จ! ในระบบจริงข้อมูลจะถูกส่งไปยังเซิร์ฟเวอร์');
+                });
+            });
+        });
+    </script>
+</body>
+</html>
