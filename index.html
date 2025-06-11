@@ -39,7 +39,7 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V5a4 4 0 00-8 0v6M5 11h14l1 9H4l1-9z" />
             </svg>
           </div>
-          <span class="text-2xl font-semibold text-pink-600">ShopDee</span>
+          <span class="text-2xl font-semibold text-pink-600">alluna</span>
         </a>
 
         <!-- Desktop Search -->
@@ -50,21 +50,13 @@
         <!-- Right Menu -->
         <div class="flex items-center space-x-4">
           <!-- User Menu -->
-          <div class="relative" x-data="{ open: isUserMenuOpen }" @click.outside="isUserMenuOpen = false">
-            <button @click="isUserMenuOpen = !isUserMenuOpen" class="flex items-center space-x-1 focus:outline-none">
+          <a href="auth.html" class="flex items-center space-x-1 focus:outline-none">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                   d="M5.121 17.804A14.958 14.958 0 0112 15c2.186 0 4.247.521 6.121 1.804M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
               </svg>
               <span class="hidden md:block">บัญชี</span>
-            </button>
-            <div x-show="isUserMenuOpen" x-transition class="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg py-2 z-40 x-cloak">
-              <a href="#" class="block px-4 py-2 hover:bg-gray-100">เข้าสู่ระบบ</a>
-              <a href="#" class="block px-4 py-2 hover:bg-gray-100">สมัครสมาชิก</a>
-              <a href="#" class="block px-4 py-2 hover:bg-gray-100">โปรไฟล์ของฉัน</a>
-              <a href="#" class="block px-4 py-2 hover:bg-gray-100">ออกจากระบบ</a>
-            </div>
-          </div>
+          </a>
 
           <!-- Cart Menu -->
           <div class="relative" x-data="{ open: isCartOpen }" @click.outside="isCartOpen = false">
@@ -77,7 +69,7 @@
             </button>
 
             <!-- Cart Dropdown -->
-            <div x-show="isCartOpen" x-transition class="absolute right-0 mt-2 w-80 bg-white border border-gray-200 rounded-md shadow-lg z-40">
+            <div x-show="isCartOpen" x-transition x-cloak class="absolute right-0 mt-2 w-80 bg-white border border-gray-200 rounded-md shadow-lg z-40">
               <div class="p-4">
                 <template x-if="cartItems.length === 0">
                   <p class="text-center text-gray-500">ไม่มีสินค้าในตะกร้า</p>
@@ -249,7 +241,7 @@
       <div>
         <h2 class="text-2xl font-bold mb-2">สมัครสมาชิกวันนี้!</h2>
         <p class="mb-4">รับสิทธิพิเศษส่วนลดทันที 10% สำหรับการสั่งซื้อครั้งแรก</p>
-        <button class="bg-white text-purple-600 px-4 py-2 rounded-full hover:bg-gray-100">สมัครสมาชิก</button>
+        <a href="auth.html" class="bg-white text-purple-600 px-4 py-2 rounded-full hover:bg-gray-100">สมัครสมาชิก</a>
       </div>
       <div class="hidden md:block">
         <!-- Money Icon -->
