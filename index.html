@@ -50,7 +50,7 @@
         <!-- Right Menu -->
         <div class="flex items-center space-x-4">
           <!-- User Menu -->
-          <a href="auth.html" class="flex items-center space-x-1 focus:outline-none">
+          <a href="auth" class="flex items-center space-x-1 focus:outline-none">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                   d="M5.121 17.804A14.958 14.958 0 0112 15c2.186 0 4.247.521 6.121 1.804M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -131,15 +131,15 @@
   <div class="container mx-auto px-4">
     <ul class="hidden md:flex justify-center space-x-8 py-3">
       <li><a href="#" class="text-gray-700 hover:text-pink-600">หน้าหลัก</a></li>
-      <li><a href="#" class="text-gray-700 hover:text-pink-600">สินค้าใหม่</a></li>
-      <li><a href="#" class="text-gray-700 hover:text-pink-600">โปรโมชั่น</a></li>
+      <li><a href="new" class="text-gray-700 hover:text-pink-600">สินค้าใหม่</a></li>
+      <li><a href="promotion" class="text-gray-700 hover:text-pink-600">โปรโมชั่น</a></li>
       <li><a href="#" class="text-gray-700 hover:text-pink-600">สินค้าขายดี</a></li>
       <li><a href="#" class="text-gray-700 hover:text-pink-600">ติดต่อเรา</a></li>
     </ul>
     <ul class="md:hidden flex flex-col space-y-2 py-3 px-4" x-show="isMenuOpen" x-transition x-cloak>
       <li><a href="#" class="block text-gray-700 hover:text-pink-600">หน้าหลัก</a></li>
-      <li><a href="#" class="block text-gray-700 hover:text-pink-600">สินค้าใหม่</a></li>
-      <li><a href="#" class="block text-gray-700 hover:text-pink-600">โปรโมชั่น</a></li>
+      <li><a href="new" class="block text-gray-700 hover:text-pink-600">สินค้าใหม่</a></li>
+      <li><a href="promotion" class="block text-gray-700 hover:text-pink-600">โปรโมชั่น</a></li>
       <li><a href="#" class="block text-gray-700 hover:text-pink-600">สินค้าขายดี</a></li>
       <li><a href="#" class="block text-gray-700 hover:text-pink-600">ติดต่อเรา</a></li>
     </ul>
@@ -208,7 +208,7 @@
       <template x-for="product in products" :key="product.id">
         <div class="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition transform hover:-translate-y-1">
           <div class="relative">
-            <div class="h-40 bg-gradient-to-r from-pink-300 to-red-300 flex items-center justify-center text-white font-semibold text-lg">
+            <div cpromotion0 bg-gradient-to-r from-pink-300 to-red-300 flex items-center justify-center text-white font-semibold text-lg">
               <!-- Placeholder Image -->
               ภาพสินค้า
             </div>
@@ -359,10 +359,10 @@
     <div>
       <h3 class="text-lg font-semibold mb-4">ช่วยเหลือ</h3>
       <ul class="space-y-2 text-gray-300 text-sm">
-        <li><a href="#" class="hover:underline">คำถามที่พบบ่อย</a></li>
+        <li><a href="about" class="hover:underline">คำถามที่พบบ่อย</a></li>
         <li><a href="#" class="hover:underline">นโยบายการคืนสินค้า</a></li>
         <li><a href="#" class="hover:underline">การจัดส่งและการคืนสินค้า</a></li>
-        <li><a href="#" class="hover:underline">วิธีการชำระเงิน</a></li>
+        <li><a href="payment" class="hover:underline">วิธีการชำระเงิน</a></li>
       </ul>
     </div>
     <!-- Customer Service -->
@@ -371,8 +371,8 @@
       <ul class="space-y-2 text-gray-300 text-sm">
         <li><a href="#" class="hover:underline">ติดต่อเรา</a></li>
         <li><a href="#" class="hover:underline">ติดตามคำสั่งซื้อ</a></li>
-        <li><a href="#" class="hover:underline">เงื่อนไขการใช้งาน</a></li>
-        <li><a href="#" class="hover:underline">นโยบายความเป็นส่วนตัว</a></li>
+        <li><a href="Terms" class="hover:underline">เงื่อนไขการใช้งาน</a></li>
+        <li><a href="privacy" class="hover:underline">นโยบายความเป็นส่วนตัว</a></li>
       </ul>
     </div>
     <!-- Contact & Payment -->
@@ -386,10 +386,10 @@
       <h3 class="text-lg font-semibold mb-2">วิธีการชำระเงิน</h3>
       <div class="flex space-x-3">
         <!-- Placeholder payment icons -->
-        <img src="https://via.placeholder.com/50x30?text=VISA" alt="VISA" class="h-8" />
-        <img src="https://via.placeholder.com/50x30?text=MasterCard" alt="MasterCard" class="h-8" />
-        <img src="https://via.placeholder.com/50x30?text=TrueMoney" alt="TrueMoney" class="h-8" />
-        <img src="https://via.placeholder.com/50x30?text=COD" alt="Cash on Delivery" class="h-8" />
+        <img src="error.png" alt="VISA" class="h-8" />
+        <img src="error.png" alt="MasterCard" class="h-8" />
+        <img src="error.png" alt="TrueMoney" class="h-8" />
+        <img src="error.png" alt="Cash on Delivery" class="h-8" />
       </div>
     </div>
   </div>
@@ -422,12 +422,12 @@
       ],
       // Categories data
       categories: [
-        { name: 'เสื้อผ้า', icon: '👕' },
-        { name: 'รองเท้า', icon: '👟' },
-        { name: 'กระเป๋า', icon: '👜' },
-        { name: 'เครื่องประดับ', icon: '💍' },
-        { name: 'อิเล็กทรอนิกส์', icon: '📱' },
-        { name: 'ความงาม', icon: '化妆' }
+        { name: 'เสื้อผ้า', icon:  img src="Clothing.png" alt="fashion" },
+        { name: 'รองเท้า', icon: img src="Shoes.png" alt="Shoes" },
+        { name: 'กระเป๋า', icon: img src="bags.png" alt="bags" },
+        { name: 'เครื่องประดับ', icon: img src="Accessories-Jewelry.png" alt="Accessories-Jewelry" },
+        { name: 'อิเล็กทรอนิกส์', icon: img src="Electronics.png" alt="Electronics" },
+        { name: 'ความงาม', icon: img src="Beauty.png" alt="Beauty" },
       ],
       addToCart(product) {
         const existing = this.cartItems.find(item => item.id === product.id);
