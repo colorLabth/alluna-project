@@ -241,7 +241,7 @@
       <div>
         <h2 class="text-2xl font-bold mb-2">สมัครสมาชิกวันนี้!</h2>
         <p class="mb-4">รับสิทธิพิเศษส่วนลดทันที 10% สำหรับการสั่งซื้อครั้งแรก</p>
-        <a href="auth.html" class="bg-white text-purple-600 px-4 py-2 rounded-full hover:bg-gray-100">สมัครสมาชิก</a>
+        <a href="auth" class="bg-white text-purple-600 px-4 py-2 rounded-full hover:bg-gray-100">สมัครสมาชิก</a>
       </div>
       <div class="hidden md:block">
         <!-- Money Icon -->
@@ -422,12 +422,12 @@
       ],
       // Categories data
       categories: [
-  { name: 'เสื้อผ้า', icon: "images/shirt.png" },
-  { name: 'รองเท้า', icon: "images/shoes.png" },
-  { name: 'กระเป๋า', icon: "images/bags.png" },
-  { name: 'เครื่องประดับ', icon: "images/jewelry.png" },
-  { name: 'อิเล็กทรอนิกส์', icon: "images/Electronics.png" },
-  { name: 'ความงาม', icon: "images/Beauty.png" },
+  { name: 'เสื้อผ้า', icon: "shirt.png" },
+  { name: 'รองเท้า', icon: "shoes.png" },
+  { name: 'กระเป๋า', icon: "bags.png" },
+  { name: 'เครื่องประดับ', icon: "jewelry.png" },
+  { name: 'อิเล็กทรอนิกส์', icon: "Electronics.png" },
+  { name: 'ความงาม', icon: "Beauty.png" },
       ],
       addToCart(product) {
         const existing = this.cartItems.find(item => item.id === product.id);
