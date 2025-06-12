@@ -190,7 +190,9 @@
       <template x-for="(cat, idx) in categories" :key="idx">
         <div class="bg-white rounded-lg p-4 flex flex-col items-center transition transform hover:-translate-y-1 hover:shadow-lg cursor-pointer">
           <div class="w-16 h-16 bg-pink-100 rounded-full flex items-center justify-center mb-2 text-2xl">
-            <span x-text="cat.icon"></span>
+          <span  x-if="cat.icon.endsWith('.png')">
+            <img :src="cat.icon" alt="" class="w-10 h-10 mx-auto" />
+          </span>
           </div>
           <span class="mt-2 font-medium" x-text="cat.name"></span>
         </div>
@@ -422,12 +424,12 @@
       ],
       // Categories data
       categories: [
-  { name: 'เสื้อผ้า', icon: "shirt.png" },
-  { name: 'รองเท้า', icon: "shoes.png" },
-  { name: 'กระเป๋า', icon: "bags.png" },
-  { name: 'เครื่องประดับ', icon: "jewelry.png" },
-  { name: 'อิเล็กทรอนิกส์', icon: "Electronics.png" },
-  { name: 'ความงาม', icon: "Beauty.png" },
+  { name: 'เสื้อผ้า', icon: "images/shirt.png" },
+  { name: 'รองเท้า', icon: "images/shoes.png" },
+  { name: 'กระเป๋า', icon: "images/bags.png" },
+  { name: 'เครื่องประดับ', icon: "images/jewelry.png" },
+  { name: 'อิเล็กทรอนิกส์', icon: "images/Electronics.png" },
+  { name: 'ความงาม', icon: "images/Beauty.png" },
       ],
       addToCart(product) {
         const existing = this.cartItems.find(item => item.id === product.id);
