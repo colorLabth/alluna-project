@@ -202,7 +202,7 @@
 </div>
 
 <!-- Personal Info Page -->
-<div id="personal-info-link" class="profile-container w-full max-w-md z-10 hidden">
+<div id="personal-info-page" class="profile-container w-full max-w-md z-10 hidden">
     <div class="p-6">
         <div class="back-button" id="back-from-personal-info">
             <i class="fas fa-arrow-left"></i> กลับ
@@ -524,34 +524,38 @@
     }
     
     // Page navigation
+    <script>
+document.addEventListener('DOMContentLoaded', function () {
+    // ไปยังหน้า
     document.getElementById('personal-info-link').addEventListener('click', function(e) {
         e.preventDefault();
         document.getElementById('main-profile').classList.add('hidden');
         document.getElementById('personal-info-page').classList.remove('hidden');
     });
-    
+
     document.getElementById('address-link').addEventListener('click', function(e) {
         e.preventDefault();
         document.getElementById('main-profile').classList.add('hidden');
         document.getElementById('address-page').classList.remove('hidden');
     });
-    
+
     document.getElementById('help-link').addEventListener('click', function(e) {
         e.preventDefault();
         document.getElementById('main-profile').classList.add('hidden');
         document.getElementById('help-page').classList.remove('hidden');
     });
-    
+
+    // กลับจากหน้า
     document.getElementById('back-from-personal-info').addEventListener('click', function() {
         document.getElementById('personal-info-page').classList.add('hidden');
         document.getElementById('main-profile').classList.remove('hidden');
     });
-    
+
     document.getElementById('back-from-address').addEventListener('click', function() {
         document.getElementById('address-page').classList.add('hidden');
         document.getElementById('main-profile').classList.remove('hidden');
     });
-    
+
     document.getElementById('back-from-help').addEventListener('click', function() {
         document.getElementById('help-page').classList.add('hidden');
         document.getElementById('main-profile').classList.remove('hidden');
@@ -570,3 +574,5 @@
         }
     });
 </script>
+</body>
+</html>
