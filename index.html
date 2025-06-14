@@ -210,10 +210,8 @@
       <template x-for="product in products" :key="product.id">
         <div class="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition transform hover:-translate-y-1">
           <div class="relative">
-            <div class="h-40 bg-gradient-to-r from-pink-300 to-red-300 flex items-center justify-center text-white font-semibold text-lg">
-              <!-- Placeholder Image -->
-              ภาพสินค้า
-            </div>
+            <!-- ภาพสินค้า -->
+            <img :src="product.image" alt="" class="h-40 w-full object-cover"/>
             <template x-if="product.discount">
               <div class="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-1 rounded">-<span x-text="product.discount"></span>%</div>
             </template>
@@ -413,15 +411,87 @@
       // Banners data (handled separately in slider component)
       // Products data
       products: [
-        { id: 1, name: 'เสื้อผ้าแฟชั่น', category: 'เสื้อผ้า', price: 590, originalPrice: 790, discount: 25, isNew: false },
-        { id: 2, name: 'รองเท้าผ้าใบ', category: 'รองเท้า', price: 1290, originalPrice: 1500, discount: 14, isNew: true },
-        { id: 3, name: 'กระเป๋าสะพาย', category: 'กระเป๋า', price: 890, originalPrice: 0, discount: 0, isNew: false },
-        { id: 4, name: 'นาฬิกาข้อมือ', category: 'เครื่องประดับ', price: 1590, originalPrice: 1990, discount: 20, isNew: true },
-        { id: 5, name: 'หูฟังบลูทูธ', category: 'อิเล็กทรอนิกส์', price: 799, originalPrice: 0, discount: 0, isNew: false },
-        { id: 6, name: 'แว่นกันแดด', category: 'อิเล็กทรอนิกส์', price: 450, originalPrice: 0, discount: 0, isNew: false },
-        { id: 7, name: 'เครื่องสำอาง', category: 'ความงาม', price: 350, originalPrice: 0, discount: 0, isNew: false },
-        { id: 8, name: 'สร้อยคอทองคำ', category: 'เครื่องประดับ', price: 4990, originalPrice: 5990, discount: 17, isNew: false },
-      ],
+  {
+    id: 1,
+    name: 'เสื้อผ้าแฟชั่น',
+    category: 'เสื้อผ้า',
+    price: 590,
+    originalPrice: 790,
+    discount: 25,
+    isNew: false,
+    image: 'https://gzone-store.github.io/images/shirt.png'
+  },
+  {
+    id: 2,
+    name: 'รองเท้าผ้าใบ',
+    category: 'รองเท้า',
+    price: 1290,
+    originalPrice: 1500,
+    discount: 14,
+    isNew: true,
+    image: 'https://gzone-store.github.io/images/Shoes.png'
+  },
+  {
+    id: 3,
+    name: 'กระเป๋าสะพาย',
+    category: 'กระเป๋า',
+    price: 890,
+    originalPrice: 0,
+    discount: 0,
+    isNew: false,
+    image: 'https://gzone-store.github.io/images/bags.png'
+  },
+  {
+    id: 4,
+    name: 'นาฬิกาข้อมือ',
+    category: 'เครื่องประดับ',
+    price: 1590,
+    originalPrice: 1990,
+    discount: 20,
+    isNew: true,
+    image: 'https://gzone-store.github.io/images/Beauty.png'
+  },
+  {
+    id: 5,
+    name: 'หูฟังบลูทูธ',
+    category: 'อิเล็กทรอนิกส์',
+    price: 799,
+    originalPrice: 0,
+    discount: 0,
+    isNew: false,
+    image: 'https://gzone-store.github.io/images/jewelry.png'
+  },
+  {
+    id: 6,
+    name: 'แว่นกันแดด',
+    category: 'อิเล็กทรอนิกส์',
+    price: 450,
+    originalPrice: 0,
+    discount: 0,
+    isNew: false,
+    image: 'https://gzone-store.github.io/images/Electronics.png'
+  },
+  {
+    id: 7,
+    name: 'เครื่องสำอาง',
+    category: 'ความงาม',
+    price: 350,
+    originalPrice: 0,
+    discount: 0,
+    isNew: false,
+    image: 'https://gzone-store.github.io/images/2.jpg'
+  },
+  {
+    id: 8,
+    name: 'สร้อยคอทองคำ',
+    category: 'เครื่องประดับ',
+    price: 4990,
+    originalPrice: 5990,
+    discount: 17,
+    isNew: false,
+    image: 'https://gzone-store.github.io/images/1.jpg'
+  }
+],
       // Categories data
       categories: [
   { name: 'เสื้อผ้า', icon: "images/shirt.png" },
