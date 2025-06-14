@@ -76,9 +76,8 @@
                 </template>
                 <template x-for="(item, index) in cartItems" :key="item.id">
                   <div class="flex items-center space-x-3 mb-4">
-                    <div class="w-16 h-16 bg-gradient-to-r from-pink-300 to-red-300 rounded-md flex items-center justify-center text-white text-sm">
-                      ภาพสินค้า
-                    </div>
+                    */ ภาพสินค้า */
+                    <img :src="item.image" alt="" class="w-16 h-16 object-cover rounded-md" />
                     <div class="flex-1">
                       <p class="font-medium" x-text="item.name"></p>
                       <p class="text-sm text-gray-500" x-text="`${item.quantity} x ${item.price.toLocaleString()} ฿`"></p>
