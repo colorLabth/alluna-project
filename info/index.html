@@ -550,17 +550,32 @@
     </div>
 </div>
 
-  <script>
-  firebase.auth().onAuthStateChanged(user => {
+  <script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+
+  // 🔁 ใส่ Firebase Config ของคุณ
+  const firebaseConfig = {
+    apiKey: "xxx",
+    authDomain: "xxx",
+    projectId: "xxx",
+    appId: "xxx"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  onAuthStateChanged(auth, user => {
     if (user) {
-      console.log("ผู้ใช้เข้าสู่ระบบแล้ว:", user.displayName);
-      // ดึงข้อมูลได้จาก user.displayName, user.email ฯลฯ
+      // 👇 ดึงชื่อ-นามสกุล และอีเมลมาแสดง
+      document.getElementById("fullname-display").textContent = user.displayName || "ยังไม่ระบุชื่อ";
+      document.getElementById("email-display").textContent = user.email || "ไม่มีอีเมล";
     } else {
-      // ถ้ายังไม่ได้ล็อกอิน
-      window.location.href = "index.html"; // ส่งกลับไปหน้า login
+      // ถ้ายังไม่ได้ล็อกอิน → ส่งกลับไปหน้า login
+      window.location.href = "auth"; // หรือ index.html แล้วแต่คุณใช้
     }
   });
-  </script>
+    </script>
 
 <script>
     // Page navigation
