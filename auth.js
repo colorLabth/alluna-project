@@ -56,4 +56,22 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
+                          document.addEventListener("DOMContentLoaded", () => {
+  console.log("🔥 auth.js loaded");
+
+  document.querySelector('#registerForm form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    console.log("🚀 กดสมัครสมาชิกแล้ว");
+  });
+
+  document.querySelector('#loginForm form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    console.log("🚀 กดเข้าสู่ระบบแล้ว");
+  });
+
+  document.querySelector('#forgotPasswordForm form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    console.log("🚀 กดลืมรหัสผ่านแล้ว");
+
+  });
 });
