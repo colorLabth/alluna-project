@@ -189,10 +189,6 @@
                         <input type="email" id="registerEmail" class="input-field w-full px-4 py-3 rounded-lg" placeholder="กรอกอีเมลของคุณ" required>
                     </div>
                     <div class="mb-4">
-                        <label for="registerPhone" class="block text-gray-700 mb-2">เบอร์โทรศัพท์</label>
-                        <input type="tel" id="registerPhone" class="input-field w-full px-4 py-3 rounded-lg" placeholder="กรอกเบอร์โทรศัพท์ของคุณ" required>
-                    </div>
-                    <div class="mb-4">
                         <label for="registerPassword" class="block text-gray-700 mb-2">รหัสผ่าน</label>
                         <input type="password" id="registerPassword" class="input-field w-full px-4 py-3 rounded-lg" placeholder="กรอกรหัสผ่านของคุณ" required>
                     </div>
@@ -232,69 +228,7 @@
         </div>
     </div>
 
-    <script>
-  const loginForm = document.querySelector('#loginForm form');
-  loginForm.addEventListener('submit', function (e) {
-    e.preventDefault();
-    const email = document.getElementById('loginEmail').value;
-    const password = document.getElementById('loginPassword').value;
-
-    auth.signInWithEmailAndPassword(email, password)
-      .then(userCredential => {
-        alert('เข้าสู่ระบบสำเร็จ');
-        window.location.href = "dashboard.html"; // เปลี่ยนไปหน้าใช้งาน
-      })
-      .catch(error => {
-        alert('เข้าสู่ระบบไม่สำเร็จ: ' + error.message);
-      });
-  });
-
-  const registerForm = document.querySelector('#registerForm form');
-  registerForm.addEventListener('submit', function (e) {
-    e.preventDefault();
-
-    const name = document.getElementById('registerName').value;
-    const email = document.getElementById('registerEmail').value;
-    const phone = document.getElementById('registerPhone').value;
-    const password = document.getElementById('registerPassword').value;
-    const confirm = document.getElementById('confirmPassword').value;
-
-    if (password !== confirm) {
-      alert('รหัสผ่านไม่ตรงกัน');
-      return;
-    }
-
-    auth.createUserWithEmailAndPassword(email, password)
-      .then(userCredential => {
-        alert('สมัครสมาชิกสำเร็จ โปรดตรวจสอบอีเมลของคุณ');
-        userCredential.user.sendEmailVerification();
-      })
-      .catch(error => {
-        alert('เกิดข้อผิดพลาด: ' + error.message);
-      });
-  });
-
-  const forgotForm = document.querySelector('#forgotPasswordForm form');
-  forgotForm.addEventListener('submit', function (e) {
-    e.preventDefault();
-    const email = document.getElementById('forgotEmail').value;
-
-    auth.sendPasswordResetEmail(email)
-      .then(() => {
-        alert('ส่งลิงก์รีเซ็ตรหัสผ่านไปยังอีเมลแล้ว');
-      })
-      .catch(error => {
-        alert('ไม่สามารถส่งอีเมลได้: ' + error.message);
-      });
-  });
-
-  // ปุ่มกลับไปหน้าเข้าสู่ระบบ
-  document.getElementById('backToLogin').addEventListener('click', () => {
-    document.getElementById('forgotPasswordForm').classList.remove('active');
-    document.getElementById('loginForm').classList.add('active');
-  });
-</script>
-
+    
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const loginForm = document.getElementById('loginForm');
