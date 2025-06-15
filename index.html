@@ -4,9 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ShopDee</title>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js"></script>
-    <script src="firebase-config.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
@@ -399,6 +398,18 @@
   if (location.pathname === "/index.html" || location.pathname === "/index") {
     window.location.replace("/");
   }
+    </script>
+
+    <script>
+const firebaseConfig = {
+  apiKey: "AIzaSyDPPVx8ghs5SD0QH6h0Lxw2I0YOv2A9ccM",
+  authDomain: "allunastore.firebaseapp.com",
+  projectId: "allunastore",
+  storageBucket: "allunastore.firebasestorage.app",
+  messagingSenderId: "839489402494",
+  appId: "1:839489402494:web:7fc04e228ad456ba97ca2f",
+  measurementId: "G-C3ZTR2BVT4"
+};
     </script>
 
         <!-- Alpine.js Data and Methods -->
