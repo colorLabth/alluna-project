@@ -553,6 +553,18 @@
     </div>
 </div>
 
+  <script>
+  firebase.auth().onAuthStateChanged(user => {
+    if (user) {
+      console.log("ผู้ใช้เข้าสู่ระบบแล้ว:", user.displayName);
+      // ดึงข้อมูลได้จาก user.displayName, user.email ฯลฯ
+    } else {
+      // ถ้ายังไม่ได้ล็อกอิน
+      window.location.href = "index.html"; // ส่งกลับไปหน้า login
+    }
+  });
+  </script>
+
 <script>
     // Page navigation
     const pages = {
