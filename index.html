@@ -49,7 +49,7 @@
         <!-- Right Menu -->
         <div class="flex items-center space-x-4">
           <!-- User Menu -->
-          <a href="auth" class="flex items-center space-x-1 focus:outline-none">
+          <a id="user-menu-link" class="flex items-center space-x-1 focus:outline-none">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                   d="M5.121 17.804A14.958 14.958 0 0112 15c2.186 0 4.247.521 6.121 1.804M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -410,6 +410,15 @@ const firebaseConfig = {
   appId: "1:839489402494:web:7fc04e228ad456ba97ca2f",
   measurementId: "G-C3ZTR2BVT4"
 };
+      
+  firebase.auth().onAuthStateChanged((user) => {
+    const userMenuLink = document.getElementById('user-menu-link');
+    if (user) {
+      userMenuLink.href = '/info';
+    } else {
+      userMenuLink.href = '/auth';
+    }
+  });
     </script>
 
         <!-- Alpine.js Data and Methods -->
