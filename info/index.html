@@ -563,9 +563,8 @@
   appId: "1:839489402494:web:7fc04e228ad456ba97ca2f",
   measurementId: "G-C3ZTR2BVT4"
   };
-
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
 
   onAuthStateChanged(auth, user => {
     if (user) {
@@ -573,7 +572,11 @@
       document.getElementById("fullname-display").textContent = user.displayName || "ยังไม่ระบุชื่อ";
       document.getElementById("email-display").textContent = user.email || "ไม่มีอีเมล";
     } else {
-      </script>
+      // ถ้ายังไม่ได้ล็อกอิน → ส่งกลับไปหน้า login
+      window.location.href = "login.html"; // หรือ index.html แล้วแต่คุณใช้
+    }
+  });
+</script>
 <script>
     // Page navigation
     const pages = {
