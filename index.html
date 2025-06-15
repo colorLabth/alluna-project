@@ -49,13 +49,13 @@
         <!-- Right Menu -->
         <div class="flex items-center space-x-4">
           <!-- User Menu -->
-          <a id="user-menu-link" class="flex items-center space-x-1 focus:outline-none">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M5.121 17.804A14.958 14.958 0 0112 15c2.186 0 4.247.521 6.121 1.804M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-              </svg>
-              <span class="hidden md:block">บัญชี</span>
-          </a>
+          <button id="user-menu-button" class="flex items-center space-x-1 focus:outline-none">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M5.121 17.804A14.958 14.958 0 0112 15c2.186 0 4.247.521 6.121 1.804M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+            <span class="hidden md:block">บัญชี</span>
+          </button>
 
           <!-- Cart Menu -->
           <div class="relative" x-data="{ open: isCartOpen }" @click.outside="isCartOpen = false">
@@ -414,9 +414,9 @@ const firebaseConfig = {
       firebase.auth().onAuthStateChanged((user) => {
     const userMenuLink = document.getElementById('user-menu-link');
     if (user) {
-      userMenuLink.setAttribute('href', 'info');
+      userMenuLink.setAttribute('href', '/info');
     } else {
-      userMenuLink.setAttribute('href', 'auth');
+      userMenuLink.setAttribute('href', '/auth');
     }
   });
     </script>
