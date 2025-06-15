@@ -410,13 +410,13 @@ const firebaseConfig = {
   appId: "1:839489402494:web:7fc04e228ad456ba97ca2f",
   measurementId: "G-C3ZTR2BVT4"
 };
-      
-  firebase.auth().onAuthStateChanged((user) => {
+
+      firebase.auth().onAuthStateChanged((user) => {
     const userMenuLink = document.getElementById('user-menu-link');
     if (user) {
-      userMenuLink.href = '/info';
+      userMenuLink.setAttribute('href', 'info');
     } else {
-      userMenuLink.href = '/auth';
+      userMenuLink.setAttribute('href', 'auth');
     }
   });
     </script>
