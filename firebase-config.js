@@ -1,6 +1,3 @@
-<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js"></script>
-
 <script>
 const firebaseConfig = {
   apiKey: "AIzaSyDPPVx8ghs5SD0QH6h0Lxw2I0YOv2A9ccM",
