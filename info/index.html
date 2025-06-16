@@ -289,7 +289,7 @@
                     
                     <div class="p-4 rounded-xl bg-gray-50">
                         <p class="text-sm text-gray-500 mb-1">เบอร์โทรศัพท์</p>
-                        <p class="font-medium">089-123-4567</p>
+                        <p id="phone-display" class="font-medium">089-123-4567</p>
                     </div>
                     
                     <div class="p-4 rounded-xl bg-gray-50">
@@ -573,7 +573,7 @@
       document.getElementById("email-display").textContent = user.email || "ไม่มีอีเมล";
     } else {
       // ถ้ายังไม่ได้ล็อกอิน → ส่งกลับไปหน้า login
-      window.location.href = "login.html"; // หรือ index.html แล้วแต่คุณใช้
+      window.location.href = "/auth";
     }
   });
 </script>
