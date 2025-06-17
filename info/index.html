@@ -564,12 +564,12 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
 
+    
   onAuthStateChanged(auth, user => {
     if (user) {
       // 👇 ดึงชื่อ-นามสกุล และอีเมลมาแสดง
       document.getElementById("fullname-display").textContent = user.displayName || "ยังไม่ระบุชื่อ";
       document.getElementById("email-display").textContent = user.email || "ไม่มีอีเมล";
-      document.getElementById("name").textContent = user.name;
       document.getElementById("photo").src = user.photo;
     } else {
       // ถ้ายังไม่ได้ล็อกอิน → ส่งกลับไปหน้า login
