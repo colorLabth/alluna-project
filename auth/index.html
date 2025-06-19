@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>สมาชิก</title>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap"
     rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -230,9 +230,9 @@
 <script>
 const firebaseConfig = {
   apiKey: "AIzaSyDPPVx8ghs5SD0QH6h0Lxw2I0YOv2A9ccM",
-  authDomain: "alluna.store",
-  projectId: "allunastore",
-  storageBucket: "allunastore.firebasestorage.app",
+  authDomain: "alluna.store", // ✅ ใช้โดเมนของคุณ
+  projectId: "allunastore",    // ✅ ตาม Project ID จริง
+  storageBucket: "allunastore.appspot.com",
   messagingSenderId: "839489402494",
   appId: "1:839489402494:web:7fc04e228ad456ba97ca2f",
   measurementId: "G-C3ZTR2BVT4"
@@ -366,11 +366,15 @@ window.location.href = '/info';
   async function googleLogin() {
     const provider = new firebase.auth.GoogleAuthProvider();
     try {
-      const result = await firebase.auth().signInWithPopup(provider);
+      const result = await auth.signInWithPopup(provider);
       const user = result.user;
+      alert(`ยินดีต้อนรับคุณ ${user.displayName} (${user.email})`);
+
+      // 👉 redirect ไปหน้าอื่น เช่น /info.html
+      window.location.href = "/info.html";
     } catch (error) {
-      console.error(error);
-      alert("เข้าสู่ระบบไม่สำเร็จ: " + error.message);
+      console.error("เข้าสู่ระบบผิดพลาด:", error);
+      alert("เข้าสู่ระบบด้วย Google ไม่สำเร็จ: " + error.message);
     }
   }
 
