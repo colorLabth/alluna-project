@@ -279,7 +279,7 @@
                 <div class="space-y-4">
                     <div class="p-4 rounded-xl bg-gray-50">
                         <p class="text-sm text-gray-500 mb-1">ชื่อ-นามสกุล</p>
-                        <p id="fullname-display" class="font-medium">นัทธมน สมิธ</p>
+                        <p id="userId" class="font-medium">นัทธมน สมิธ</p>
                     </div>
                     
                     <div class="p-4 rounded-xl bg-gray-50">
@@ -294,7 +294,7 @@
                     
                     <div class="p-4 rounded-xl bg-gray-50">
                         <p class="text-sm text-gray-500 mb-1">อีเมล</p>
-                        <p id="email-display" class="font-medium">nutty1234@email.com</p>
+                        <p id="userEmail" class="font-medium">nutty1234@email.com</p>
                     </div>
                 </div>
             </div>
@@ -550,35 +550,44 @@
     </div>
 </div>
 
-  <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
-  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<script>
+  const supabase = supabase.createClient(
+    'https://ulddopzcvtiitmekmhmm.supabase.co',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVsZGRvcHpjdnRpaXRtZWttaG1tIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA0Nzg1MTQsImV4cCI6MjA2NjA1NDUxNH0.VlXf8QaXbdk-aR5WSrCub0UWJteAssQ27kyU3xniI74'
+  );
 
-  const firebaseConfig = {
-  apiKey: "AIzaSyDPPVx8ghs5SD0QH6h0Lxw2I0YOv2A9ccM",
-  authDomain: "alluna.store",
-  projectId: "allunastore",
-  storageBucket: "allunastore.firebasestorage.app",
-  messagingSenderId: "839489402494",
-  appId: "1:839489402494:web:7fc04e228ad456ba97ca2f",
-  measurementId: "G-C3ZTR2BVT4"
-  };
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
+  // ฟังก์ชันเช็คสถานะ login
+  async function checkAuth() {
+    const { data: { user }, error } = await supabase.auth.getUser();
 
-    
-  onAuthStateChanged(auth, user => {
     if (user) {
-      // 👇 ดึงชื่อ-นามสกุล และอีเมลมาแสดง
-      document.getElementById("fullname-display").textContent = user.displayName || "ยังไม่ระบุชื่อ";
-      document.getElementById("email-display").textContent = user.email || "ไม่มีอีเมล";
-      document.getElementById("photo").src = user.photo;
+      // ✅ login อยู่แล้ว
+      console.log("ล็อกอินอยู่:", user);
+
+      // แสดงข้อมูล
+      document.getElementById("userEmail").innerText = user.email;
+      document.getElementById("userId").innerText = user.id;
+      document.getElementById("userInfo").style.display = "block";
     } else {
-      // ถ้ายังไม่ได้ล็อกอิน → ส่งกลับไปหน้า login
+      // ❌ ไม่ได้ล็อกอิน → redirect กลับหน้า login
+      alert("กรุณาเข้าสู่ระบบก่อน");
       window.location.href = "/auth";
     }
-  });
+  }
+
+  // ฟังก์ชัน logout
+  async function logout() {
+    await supabase.auth.signOut();
+    alert("ออกจากระบบแล้ว");
+    window.location.href = "/auth";
+  }
+
+  // เรียกเช็คทันทีเมื่อโหลดหน้า
+  checkAuth();
 </script>
+
+  
 <script>
     // Page navigation
     const pages = {
