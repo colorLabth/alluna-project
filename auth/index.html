@@ -258,7 +258,7 @@ function googleLogin() {
   supabase.auth.signInWithOAuth({
     provider: "google",
     options: {
-      redirectTo: "https://www.alluna.store/auth/"
+      redirectTo: "https://www.alluna.store/info"
     }
   });
 }
@@ -268,7 +268,7 @@ function twitterLogin() {
   supabase.auth.signInWithOAuth({
     provider: "twitter",
     options: {
-      redirectTo: "https://www.alluna.store/auth/"
+      redirectTo: "https://www.alluna.store/info"
     }
   });
 }
