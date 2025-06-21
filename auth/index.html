@@ -225,108 +225,97 @@
         </div>
     </div>
 
-    <!-- Supabase SDK -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 
 <script>
-const supabase = supabase.createClient(
-  'https://ulddopzcvtiitmekmhmm.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVsZGRvcHpjdnRpaXRtZWttaG1tIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA0Nzg1MTQsImV4cCI6MjA2NjA1NDUxNH0.VlXf8QaXbdk-aR5WSrCub0UWJteAssQ27kyU3xniI74'
-);
+  const firebaseConfig = {
+    apiKey: "AIzaSyCbNHUp54u3e7p4SkH4dKHBId5Wb4kxt1c",
+    authDomain: "alluna-e472b.firebaseapp.com",
+    projectId: "alluna-e472b",
+    storageBucket: "alluna-e472b.firebasestorage.app",
+    messagingSenderId: "1006790834346",
+    appId: "1:1006790834346:web:f60bce0ffbdb6ecc0478d3",
+    measurementId: "G-M175935YCW"
+  };
+  firebase.initializeApp(firebaseConfig);
 
-// ✅ ดัก event เมื่อ Supabase login สำเร็จ (เช่น Google, Twitter)
-supabase.auth.onAuthStateChange(async (event, session) => {
-  if (event === "SIGNED_IN") {
-    console.log("✅ ล็อกอินด้วย OAuth สำเร็จ:", session.user.email);
-    window.location.href = "/info";
-  }
-});
-
-// ✅ ตรวจสอบว่าผู้ใช้มี session อยู่แล้วไหม (login ผ่านมาแล้ว)
-async function checkLogin() {
-  const { data: { session } } = await supabase.auth.getSession();
-  if (session?.user) {
-    console.log("✅ พบ session:", session.user.email);
-    window.location.href = "/info";
-  } else {
-    console.log("⛔ ยังไม่ได้ล็อกอิน");
-  }
-}
-
-// ✅ ฟังก์ชันล็อกอิน Google
-function googleLogin() {
-  supabase.auth.signInWithOAuth({
-    provider: "google",
-    options: {
-      redirectTo: "https://www.alluna.store/info"
+  // 🔐 ล็อกอิน
+  document.querySelector('#loginForm form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = loginEmail.value;
+    const password = loginPassword.value;
+    try {
+      const result = await firebase.auth().signInWithEmailAndPassword(email, password);
+      if (!result.user.emailVerified) {
+        await firebase.auth().signOut();
+        alert("กรุณายืนยันอีเมลก่อนเข้าสู่ระบบ");
+        return;
+      }
+      alert("เข้าสู่ระบบสำเร็จ!");
+    } catch (error) {
+      alert("ผิดพลาด: " + error.message);
     }
   });
-}
 
-// ✅ ฟังก์ชันล็อกอิน Twitter
+  // 📝 สมัครสมาชิก
+  document.querySelector('#registerForm form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = registerEmail.value;
+    const password = registerPassword.value;
+    const confirm = confirmPassword.value;
+    if (password !== confirm) return alert("รหัสผ่านไม่ตรงกัน");
+    try {
+      const result = await firebase.auth().createUserWithEmailAndPassword(email, password);
+      await result.user.sendEmailVerification();
+      alert("สมัครสำเร็จ! กรุณายืนยันอีเมลก่อนเข้าสู่ระบบ");
+      firebase.auth().signOut();
+      toggleForm("loginForm");
+    } catch (error) {
+      alert("ผิดพลาด: " + error.message);
+    }
+  });
+
+  // 🔁 ลืมรหัสผ่าน
+  document.querySelector('#forgotPasswordForm form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = forgotEmail.value;
+    try {
+      const methods = await firebase.auth().fetchSignInMethodsForEmail(email);
+      if (methods.length === 0) return alert("ไม่พบอีเมลในระบบ");
+      await firebase.auth().sendPasswordResetEmail(email);
+      alert("ส่งลิงก์รีเซ็ตรหัสผ่านแล้ว กรุณาตรวจสอบอีเมลของคุณ");
+    } catch (error) {
+      alert("ผิดพลาด: " + error.message);
+    }
+  });
+
+  // 🔑 Google Login
+  function googleLogin() {
+    const provider = new firebase.auth.GoogleAuthProvider();
+    firebase.auth().signInWithPopup(provider)
+      .then(result => {
+        alert("เข้าสู่ระบบสำเร็จ: " + result.user.displayName);
+      })
+      .catch(err => alert("เกิดข้อผิดพลาด: " + err.message));
+  }
+
+    // 🔑 Twitter Login
 function twitterLogin() {
-  supabase.auth.signInWithOAuth({
-    provider: "twitter",
-    options: {
-      redirectTo: "https://www.alluna.store/info"
-    }
-  });
+  const provider = new firebase.auth.TwitterAuthProvider();
+  firebase.auth().signInWithPopup(provider)
+    .then(result => {
+      alert("เข้าสู่ระบบด้วย Twitter สำเร็จ: " + result.user.displayName);
+      // console.log(result.user); // ใช้ดูข้อมูลผู้ใช้เพิ่มเติม
+    })
+    .catch(error => {
+      console.error("เกิดข้อผิดพลาด Twitter Login:", error);
+      alert("เกิดข้อผิดพลาด: " + error.message);
+    });
 }
 
-// ✅ สมัครสมาชิกด้วย Email
-document.querySelector("#registerForm form").addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const email = document.getElementById("registerEmail").value;
-  const password = document.getElementById("registerPassword").value;
-  const confirmPassword = document.getElementById("confirmPassword").value;
-
-  if (password !== confirmPassword) {
-    alert("❌ รหัสผ่านไม่ตรงกัน");
-    return;
-  }
-
-  const { error } = await supabase.auth.signUp({ email, password });
-  if (error) {
-    alert("❌ " + error.message);
-  } else {
-    alert("✅ สมัครเสร็จแล้ว! กรุณายืนยันอีเมลก่อนเข้าสู่ระบบ");
-  }
-});
-
-// ✅ เข้าสู่ระบบด้วย Email/Password
-document.querySelector("#loginForm form").addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const email = document.getElementById("loginEmail").value;
-  const password = document.getElementById("loginPassword").value;
-
-  const { data: { user }, error } = await supabase.auth.signInWithPassword({ email, password });
-
-  if (error) {
-    alert("❌ " + error.message);
-  } else if (!user.email_confirmed_at) {
-    alert("❗ กรุณายืนยันอีเมลก่อนใช้งาน");
-    await supabase.auth.signOut();
-  } else {
-    alert("✅ เข้าสู่ระบบสำเร็จ");
-    window.location.href = "/info";
-  }
-});
-
-// ✅ ลืมรหัสผ่าน
-document.querySelector("#forgotPasswordForm form").addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const email = document.getElementById("forgotEmail").value;
-  const { error } = await supabase.auth.resetPasswordForEmail(email);
-  if (error) {
-    alert("❌ " + error.message);
-  } else {
-    alert("✅ ส่งลิงก์รีเซ็ตรหัสผ่านแล้ว กรุณาเช็คอีเมล");
-  }
-});
-
-// ✅ เรียกใช้ทันทีเมื่อโหลดหน้า
-checkLogin();
-</script>
+        </script>
     
     <script>
         document.addEventListener('DOMContentLoaded', function() {
