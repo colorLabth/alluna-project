@@ -4,8 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>สมาชิก</title>
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap"
     rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -226,169 +224,91 @@
             </div>
         </div>
     </div>
-    
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 <script>
-const firebaseConfig = {
-  apiKey: "AIzaSyDPPVx8ghs5SD0QH6h0Lxw2I0YOv2A9ccM",
-  authDomain: "alluna.store", // ✅ ใช้โดเมนของคุณ
-  projectId: "allunastore",    // ✅ ตาม Project ID จริง
-  storageBucket: "allunastore.appspot.com",
-  messagingSenderId: "839489402494",
-  appId: "1:839489402494:web:7fc04e228ad456ba97ca2f",
-  measurementId: "G-C3ZTR2BVT4"
-};
+const supabase = supabase.createClient(
+  'https://ulddopzcvtiitmekmhmm.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVsZGRvcHpjdnRpaXRtZWttaG1tIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA0Nzg1MTQsImV4cCI6MjA2NjA1NDUxNH0.VlXf8QaXbdk-aR5WSrCub0UWJteAssQ27kyU3xniI74'
+);
 
-// Initialize Firebase
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
+    checkLogin();
 
-document.addEventListener('DOMContentLoaded', () => {
-  // Elements
-  const loginForm = document.getElementById('loginForm');
-  const registerForm = document.getElementById('registerForm');
-  const forgotPasswordForm = document.getElementById('forgotPasswordForm');
+  async function checkLogin() {
+    const { data: { user } } = await supabase.auth.getUser();
 
-  const showRegisterLink = document.getElementById('showRegisterForm');
-  const showLoginLink = document.getElementById('showLoginForm');
-  const forgotPasswordLink = document.getElementById('forgotPasswordLink');
-  const backToLoginBtn = document.getElementById('backToLogin');
+    if (user) {
+        
+// สมัครสมาชิก
+document.querySelector("#registerForm form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const email = document.getElementById("registerEmail").value;
+  const password = document.getElementById("registerPassword").value;
+  const confirmPassword = document.getElementById("confirmPassword").value;
 
-  function showForm(formToShow) {
-    [loginForm, registerForm, forgotPasswordForm].forEach(form => {
-      form.classList.remove('active');
-      form.style.display = 'none';
-    });
-    formToShow.classList.add('active');
-    formToShow.style.display = 'block';
+  if (password !== confirmPassword) {
+    alert("❌ รหัสผ่านไม่ตรงกัน");
+    return;
   }
 
-  showForm(loginForm);
-
-  showRegisterLink?.addEventListener('click', e => {
-    e.preventDefault();
-    showForm(registerForm);
-  });
-
-  showLoginLink?.addEventListener('click', e => {
-    e.preventDefault();
-    showForm(loginForm);
-  });
-
-  forgotPasswordLink?.addEventListener('click', e => {
-    e.preventDefault();
-    showForm(forgotPasswordForm);
-  });
-
-  backToLoginBtn?.addEventListener('click', () => {
-    showForm(loginForm);
-  });
-
-  // ✅ สมัครสมาชิก พร้อมส่งอีเมลยืนยัน
-  registerForm.querySelector('form').addEventListener('submit', e => {
-    e.preventDefault();
-
-    const name = document.getElementById('registerName').value.trim();
-    const email = document.getElementById('registerEmail').value.trim();
-    const password = document.getElementById('registerPassword').value;
-    const confirmPassword = document.getElementById('confirmPassword').value;
-
-    if (password !== confirmPassword) {
-      alert('รหัสผ่านไม่ตรงกัน');
-      return;
-    }
-
-    auth.createUserWithEmailAndPassword(email, password)
-      .then(userCredential => {
-        const user = userCredential.user;
-        return user.updateProfile({ displayName: name }).then(() => {
-          return user.sendEmailVerification(); // 🔐 ส่งอีเมลยืนยัน
-        });
-      })
-      .then(() => {
-        alert('สมัครสำเร็จ! โปรดยืนยันอีเมลก่อนเข้าสู่ระบบ');
-        registerForm.querySelector('form').reset();
-        showForm(loginForm);
-      })
-      .catch(error => {
-        alert(`สมัครไม่สำเร็จ: ${error.message}`);
-      });
-  });
-
-  // ✅ เข้าสู่ระบบ → ตรวจสอบอีเมลยืนยันก่อน
-  loginForm.querySelector('form').addEventListener('submit', e => {
-    e.preventDefault();
-
-    const email = document.getElementById('loginEmail').value.trim();
-    const password = document.getElementById('loginPassword').value;
-
-    auth.signInWithEmailAndPassword(email, password)
-      .then(userCredential => {
-        const user = userCredential.user;
-        if (!user.emailVerified) {
-          auth.signOut(); // ป้องกันยังไม่ยืนยัน
-          alert('กรุณายืนยันอีเมลก่อนเข้าสู่ระบบ');
-          return;
-        }
-
-window.location.href = '/info';
-      })
-      .catch(error => {
-        alert(`เข้าสู่ระบบไม่สำเร็จ: ${error.message}`);
-      });
-  });
-
-  // ✅ ลืมรหัสผ่าน: ตรวจสอบอีเมลว่ามีจริงก่อน
-  forgotPasswordForm.querySelector('form').addEventListener('submit', e => {
-    e.preventDefault();
-
-    const email = document.getElementById('forgotEmail').value.trim();
-
-    // ตรวจสอบว่ามี email นี้ไหมในระบบ
-    auth.fetchSignInMethodsForEmail(email)
-      .then(methods => {
-        if (methods.length === 0) {
-          alert('ไม่พบอีเมลนี้ในระบบ');
-          return;
-        }
-
-        return auth.sendPasswordResetEmail(email).then(() => {
-          alert('ส่งลิงก์รีเซ็ตรหัสผ่านเรียบร้อยแล้ว');
-          forgotPasswordForm.querySelector('form').reset();
-          showForm(loginForm);
-        });
-      })
-      .catch(error => {
-        alert(`เกิดข้อผิดพลาด: ${error.message}`);
-      });
-  });
+  const { error } = await supabase.auth.signUp({ email, password });
+  if (error) alert("❌ " + error.message);
+  else alert("✅ สมัครเสร็จแล้ว! กรุณายืนยันอีเมลก่อนเข้าสู่ระบบ");
 });
 
-  async function googleLogin() {
-    const provider = new firebase.auth.GoogleAuthProvider();
-    try {
-      const result = await auth.signInWithPopup(provider);
-      const user = result.user;
-      alert(`ยินดีต้อนรับคุณ ${user.displayName} (${user.email})`);
+// เข้าสู่ระบบ
+document.querySelector("#loginForm form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const email = document.getElementById("loginEmail").value;
+  const password = document.getElementById("loginPassword").value;
 
-      // 👉 redirect ไปหน้าอื่น เช่น /info.html
-      window.location.href = "/info.html";
-    } catch (error) {
-      console.error("เข้าสู่ระบบผิดพลาด:", error);
-      alert("เข้าสู่ระบบด้วย Google ไม่สำเร็จ: " + error.message);
-    }
+  const { error } = await supabase.auth.signInWithPassword({ email, password });
+  if (error) alert("❌ " + error.message);
+  else {
+    alert("✅ เข้าสู่ระบบสำเร็จ");
+    window.location.href = "account.html"; // เปลี่ยนเส้นทางถ้าต้องการ
   }
+});
 
-  async function twitterLogin() {
-    const provider = new firebase.auth.TwitterAuthProvider();
-    try {
-      const result = await firebase.auth().signInWithPopup(provider);
-      const user = result.user;
-    } catch (error) {
-      console.error(error);
-      alert("เข้าสู่ระบบด้วย Twitter ไม่สำเร็จ: " + error.message);
-    }
-  }
+// ลืมรหัสผ่าน
+document.querySelector("#forgotPasswordForm form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const email = document.getElementById("forgotEmail").value;
+  const { error } = await supabase.auth.resetPasswordForEmail(email);
+  if (error) alert("❌ " + error.message);
+  else alert("✅ ส่งลิงก์รีเซ็ตรหัสผ่านแล้ว กรุณาเช็คอีเมล");
+});
+
+// Google Login
+function googleLogin() {
+  supabase.auth.signInWithOAuth({ provider: "google" });
+}
+
+// Twitter Login
+function twitterLogin() {
+  supabase.auth.signInWithOAuth({ provider: "twitter" });
+}
+
+// เปลี่ยนฟอร์ม
+document.getElementById("showRegisterForm").onclick = () => {
+  document.getElementById("loginForm").classList.remove("active");
+  document.getElementById("registerForm").classList.add("active");
+};
+document.getElementById("showLoginForm").onclick = () => {
+  document.getElementById("registerForm").classList.remove("active");
+  document.getElementById("loginForm").classList.add("active");
+};
+document.getElementById("forgotPasswordLink").onclick = (e) => {
+  e.preventDefault();
+  document.getElementById("loginForm").classList.remove("active");
+  document.getElementById("forgotPasswordForm").classList.add("active");
+};
+document.getElementById("backToLogin").onclick = () => {
+  document.getElementById("forgotPasswordForm").classList.remove("active");
+  document.getElementById("loginForm").classList.add("active");
+};
 </script>
+
     
     <script>
         document.addEventListener('DOMContentLoaded', function() {
