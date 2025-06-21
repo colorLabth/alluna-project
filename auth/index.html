@@ -225,25 +225,55 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <!-- Supabase SDK -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+
 <script>
 const supabase = supabase.createClient(
   'https://ulddopzcvtiitmekmhmm.supabase.co',
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVsZGRvcHpjdnRpaXRtZWttaG1tIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA0Nzg1MTQsImV4cCI6MjA2NjA1NDUxNH0.VlXf8QaXbdk-aR5WSrCub0UWJteAssQ27kyU3xniI74'
 );
 
-// ✅ เช็คสถานะล็อกอิน
+// ✅ ดัก event เมื่อ Supabase login สำเร็จ (เช่น Google, Twitter)
+supabase.auth.onAuthStateChange(async (event, session) => {
+  if (event === "SIGNED_IN") {
+    console.log("✅ ล็อกอินด้วย OAuth สำเร็จ:", session.user.email);
+    window.location.href = "/info";
+  }
+});
+
+// ✅ ตรวจสอบว่าผู้ใช้มี session อยู่แล้วไหม (login ผ่านมาแล้ว)
 async function checkLogin() {
-  const { data: { user }, error } = await supabase.auth.getUser();
-  if (user) {
-    console.log("✅ ผู้ใช้ล็อกอินแล้ว:", user.email);
-    window.location.href = "/info"; // เปลี่ยน path ตามที่คุณต้องการ
+  const { data: { session } } = await supabase.auth.getSession();
+  if (session?.user) {
+    console.log("✅ พบ session:", session.user.email);
+    window.location.href = "/info";
   } else {
     console.log("⛔ ยังไม่ได้ล็อกอิน");
   }
 }
 
-// ✅ สมัครสมาชิก
+// ✅ ฟังก์ชันล็อกอิน Google
+function googleLogin() {
+  supabase.auth.signInWithOAuth({
+    provider: "google",
+    options: {
+      redirectTo: "https://www.alluna.store/auth/"
+    }
+  });
+}
+
+// ✅ ฟังก์ชันล็อกอิน Twitter
+function twitterLogin() {
+  supabase.auth.signInWithOAuth({
+    provider: "twitter",
+    options: {
+      redirectTo: "https://www.alluna.store/auth/"
+    }
+  });
+}
+
+// ✅ สมัครสมาชิกด้วย Email
 document.querySelector("#registerForm form").addEventListener("submit", async (e) => {
   e.preventDefault();
   const email = document.getElementById("registerEmail").value;
@@ -263,7 +293,7 @@ document.querySelector("#registerForm form").addEventListener("submit", async (e
   }
 });
 
-// ✅ เข้าสู่ระบบ
+// ✅ เข้าสู่ระบบด้วย Email/Password
 document.querySelector("#loginForm form").addEventListener("submit", async (e) => {
   e.preventDefault();
   const email = document.getElementById("loginEmail").value;
@@ -275,10 +305,10 @@ document.querySelector("#loginForm form").addEventListener("submit", async (e) =
     alert("❌ " + error.message);
   } else if (!user.email_confirmed_at) {
     alert("❗ กรุณายืนยันอีเมลก่อนใช้งาน");
-    await supabase.auth.signOut(); // ออกจากระบบอัตโนมัติ
+    await supabase.auth.signOut();
   } else {
     alert("✅ เข้าสู่ระบบสำเร็จ");
-    window.location.href = "/info"; // หรือหน้าที่ต้องการ
+    window.location.href = "/info";
   }
 });
 
@@ -294,17 +324,7 @@ document.querySelector("#forgotPasswordForm form").addEventListener("submit", as
   }
 });
 
-// ✅ Google Login
-function googleLogin() {
-  supabase.auth.signInWithOAuth({ provider: "google" });
-}
-
-// ✅ Twitter Login
-function twitterLogin() {
-  supabase.auth.signInWithOAuth({ provider: "twitter" });
-}
-
-// เรียกเมื่อโหลดหน้า
+// ✅ เรียกใช้ทันทีเมื่อโหลดหน้า
 checkLogin();
 </script>
     
