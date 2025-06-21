@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>สมาชิก</title>
+    <script src="https://cdn.auth0.com/js/auth0-spa-js/1.19/auth0-spa-js.production.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap"
     rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -225,97 +226,50 @@
         </div>
     </div>
 
-    <!-- Firebase SDK -->
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script>
+  let auth0 = null;
 
-<script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyCbNHUp54u3e7p4SkH4dKHBId5Wb4kxt1c",
-    authDomain: "alluna-e472b.firebaseapp.com",
-    projectId: "alluna-e472b",
-    storageBucket: "alluna-e472b.firebasestorage.app",
-    messagingSenderId: "1006790834346",
-    appId: "1:1006790834346:web:f60bce0ffbdb6ecc0478d3",
-    measurementId: "G-M175935YCW"
-  };
-  firebase.initializeApp(firebaseConfig);
+  async function initAuth0() {
+    auth0 = await createAuth0Client({
+      domain: "alluna.us.auth0.com",        // 👈 เปลี่ยนตรงนี้
+      client_id: "ifGQEPypwXEdThslpkNueB039fG0DD0O",  // 👈 เปลี่ยนตรงนี้
+      cacheLocation: "localstorage"
+    });
 
-  // 🔐 ล็อกอิน
-  document.querySelector('#loginForm form').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const email = loginEmail.value;
-    const password = loginPassword.value;
-    try {
-      const result = await firebase.auth().signInWithEmailAndPassword(email, password);
-      if (!result.user.emailVerified) {
-        await firebase.auth().signOut();
-        alert("กรุณายืนยันอีเมลก่อนเข้าสู่ระบบ");
-        return;
-      }
-      alert("เข้าสู่ระบบสำเร็จ!");
-    } catch (error) {
-      alert("ผิดพลาด: " + error.message);
+    // ตรวจสอบว่า redirect กลับมาจาก Auth0 หรือไม่
+    if (window.location.search.includes("code=") && window.location.search.includes("state=")) {
+      await auth0.handleRedirectCallback();
+      window.history.replaceState({}, document.title, "/"); // รีเซ็ต URL
     }
-  });
 
-  // 📝 สมัครสมาชิก
-  document.querySelector('#registerForm form').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const email = registerEmail.value;
-    const password = registerPassword.value;
-    const confirm = confirmPassword.value;
-    if (password !== confirm) return alert("รหัสผ่านไม่ตรงกัน");
-    try {
-      const result = await firebase.auth().createUserWithEmailAndPassword(email, password);
-      await result.user.sendEmailVerification();
-      alert("สมัครสำเร็จ! กรุณายืนยันอีเมลก่อนเข้าสู่ระบบ");
-      firebase.auth().signOut();
-      toggleForm("loginForm");
-    } catch (error) {
-      alert("ผิดพลาด: " + error.message);
+    const isAuth = await auth0.isAuthenticated();
+    if (isAuth) {
+      const user = await auth0.getUser();
+      console.log("User:", user); // ดึงชื่อ/อีเมล/รูป
+      document.getElementById("loginForm").style.display = "none";
+      document.getElementById("profile").innerHTML = `
+        <p>👤 ${user.name}</p>
+        <p>📧 ${user.email}</p>
+        <img src="${user.picture}" width="50" class="mt-2 rounded-full">
+        <br><br>
+        <button onclick="logout()" class="mt-4 text-sm underline text-pink-600">ออกจากระบบ</button>
+      `;
     }
-  });
-
-  // 🔁 ลืมรหัสผ่าน
-  document.querySelector('#forgotPasswordForm form').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const email = forgotEmail.value;
-    try {
-      const methods = await firebase.auth().fetchSignInMethodsForEmail(email);
-      if (methods.length === 0) return alert("ไม่พบอีเมลในระบบ");
-      await firebase.auth().sendPasswordResetEmail(email);
-      alert("ส่งลิงก์รีเซ็ตรหัสผ่านแล้ว กรุณาตรวจสอบอีเมลของคุณ");
-    } catch (error) {
-      alert("ผิดพลาด: " + error.message);
-    }
-  });
-
-  // 🔑 Google Login
-  function googleLogin() {
-    const provider = new firebase.auth.GoogleAuthProvider();
-    firebase.auth().signInWithPopup(provider)
-      .then(result => {
-        alert("เข้าสู่ระบบสำเร็จ: " + result.user.displayName);
-      })
-      .catch(err => alert("เกิดข้อผิดพลาด: " + err.message));
   }
 
-    // 🔑 Twitter Login
-function twitterLogin() {
-  const provider = new firebase.auth.TwitterAuthProvider();
-  firebase.auth().signInWithPopup(provider)
-    .then(result => {
-      alert("เข้าสู่ระบบด้วย Twitter สำเร็จ: " + result.user.displayName);
-      // console.log(result.user); // ใช้ดูข้อมูลผู้ใช้เพิ่มเติม
-    })
-    .catch(error => {
-      console.error("เกิดข้อผิดพลาด Twitter Login:", error);
-      alert("เกิดข้อผิดพลาด: " + error.message);
+  function googleLogin() {
+    auth0.loginWithRedirect({
+      redirect_uri: window.location.origin + "/callback.html",
+      connection: "google-oauth2" // 👉 บังคับใช้ Google โดยตรง
     });
-}
+  }
 
-        </script>
+  function logout() {
+    auth0.logout({ returnTo: window.location.origin });
+  }
+
+  initAuth0();
+    </script>
     
     <script>
         document.addEventListener('DOMContentLoaded', function() {
