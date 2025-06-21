@@ -5,8 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>สมาชิก</title>
     <script src="https://cdn.auth0.com/js/auth0-spa-js/1.20/auth0-spa-js.production.js"></script>
-    <script src="auth.js"></script>
-    <script>initAuth();</script>
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap"
     rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -284,7 +282,7 @@ function twitterLogin() {
     auth0.logout({ returnTo: window.location.origin });
   }
 
-  
+    initAuth0();
     </script>
     
     <script>
