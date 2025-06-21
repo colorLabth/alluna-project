@@ -228,16 +228,14 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 <script>
 const supabase = supabase.createClient(
-  'https://ulddopzcvtiitmekmhmm.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVsZGRvcHpjdnRpaXRtZWttaG1tIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA0Nzg1MTQsImV4cCI6MjA2NjA1NDUxNH0.VlXf8QaXbdk-aR5WSrCub0UWJteAssQ27kyU3xniI74'
+    'https://ulddopzcvtiitmekmhmm.supabase.co',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVsZGRvcHpjdnRpaXRtZWttaG1tIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA0Nzg1MTQsImV4cCI6MjA2NjA1NDUxNH0.VlXf8QaXbdk-aR5WSrCub0UWJteAssQ27kyU3xniI74'
+  
 );
-
-    checkLogin();
-
-  async function checkLogin() {
-    const { data: { user } } = await supabase.auth.getUser();
-
-    if (user) {
+    
+    async function checkLogin() {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
         
 // สมัครสมาชิก
 document.querySelector("#registerForm form").addEventListener("submit", async (e) => {
@@ -266,7 +264,7 @@ document.querySelector("#loginForm form").addEventListener("submit", async (e) =
   if (error) alert("❌ " + error.message);
   else {
     alert("✅ เข้าสู่ระบบสำเร็จ");
-    window.location.href = "account.html"; // เปลี่ยนเส้นทางถ้าต้องการ
+    window.location.href = "/info"; // เปลี่ยนเส้นทางถ้าต้องการ
   }
 });
 
@@ -288,25 +286,7 @@ function googleLogin() {
 function twitterLogin() {
   supabase.auth.signInWithOAuth({ provider: "twitter" });
 }
-
-// เปลี่ยนฟอร์ม
-document.getElementById("showRegisterForm").onclick = () => {
-  document.getElementById("loginForm").classList.remove("active");
-  document.getElementById("registerForm").classList.add("active");
-};
-document.getElementById("showLoginForm").onclick = () => {
-  document.getElementById("registerForm").classList.remove("active");
-  document.getElementById("loginForm").classList.add("active");
-};
-document.getElementById("forgotPasswordLink").onclick = (e) => {
-  e.preventDefault();
-  document.getElementById("loginForm").classList.remove("active");
-  document.getElementById("forgotPasswordForm").classList.add("active");
-};
-document.getElementById("backToLogin").onclick = () => {
-  document.getElementById("forgotPasswordForm").classList.remove("active");
-  document.getElementById("loginForm").classList.add("active");
-};
+checkLogin();
 </script>
 
     
