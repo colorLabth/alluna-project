@@ -228,16 +228,22 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 <script>
 const supabase = supabase.createClient(
-    'https://ulddopzcvtiitmekmhmm.supabase.co',
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVsZGRvcHpjdnRpaXRtZWttaG1tIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA0Nzg1MTQsImV4cCI6MjA2NjA1NDUxNH0.VlXf8QaXbdk-aR5WSrCub0UWJteAssQ27kyU3xniI74'
-  
+  'https://ulddopzcvtiitmekmhmm.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVsZGRvcHpjdnRpaXRtZWttaG1tIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA0Nzg1MTQsImV4cCI6MjA2NjA1NDUxNH0.VlXf8QaXbdk-aR5WSrCub0UWJteAssQ27kyU3xniI74'
 );
-    
-    async function checkLogin() {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (user) {
-        
-// สมัครสมาชิก
+
+// ✅ เช็คสถานะล็อกอิน
+async function checkLogin() {
+  const { data: { user }, error } = await supabase.auth.getUser();
+  if (user) {
+    console.log("✅ ผู้ใช้ล็อกอินแล้ว:", user.email);
+    window.location.href = "/info"; // เปลี่ยน path ตามที่คุณต้องการ
+  } else {
+    console.log("⛔ ยังไม่ได้ล็อกอิน");
+  }
+}
+
+// ✅ สมัครสมาชิก
 document.querySelector("#registerForm form").addEventListener("submit", async (e) => {
   e.preventDefault();
   const email = document.getElementById("registerEmail").value;
@@ -250,45 +256,57 @@ document.querySelector("#registerForm form").addEventListener("submit", async (e
   }
 
   const { error } = await supabase.auth.signUp({ email, password });
-  if (error) alert("❌ " + error.message);
-  else alert("✅ สมัครเสร็จแล้ว! กรุณายืนยันอีเมลก่อนเข้าสู่ระบบ");
+  if (error) {
+    alert("❌ " + error.message);
+  } else {
+    alert("✅ สมัครเสร็จแล้ว! กรุณายืนยันอีเมลก่อนเข้าสู่ระบบ");
+  }
 });
 
-// เข้าสู่ระบบ
+// ✅ เข้าสู่ระบบ
 document.querySelector("#loginForm form").addEventListener("submit", async (e) => {
   e.preventDefault();
   const email = document.getElementById("loginEmail").value;
   const password = document.getElementById("loginPassword").value;
 
-  const { error } = await supabase.auth.signInWithPassword({ email, password });
-  if (error) alert("❌ " + error.message);
-  else {
+  const { data: { user }, error } = await supabase.auth.signInWithPassword({ email, password });
+
+  if (error) {
+    alert("❌ " + error.message);
+  } else if (!user.email_confirmed_at) {
+    alert("❗ กรุณายืนยันอีเมลก่อนใช้งาน");
+    await supabase.auth.signOut(); // ออกจากระบบอัตโนมัติ
+  } else {
     alert("✅ เข้าสู่ระบบสำเร็จ");
-    window.location.href = "/info"; // เปลี่ยนเส้นทางถ้าต้องการ
+    window.location.href = "/info"; // หรือหน้าที่ต้องการ
   }
 });
 
-// ลืมรหัสผ่าน
+// ✅ ลืมรหัสผ่าน
 document.querySelector("#forgotPasswordForm form").addEventListener("submit", async (e) => {
   e.preventDefault();
   const email = document.getElementById("forgotEmail").value;
   const { error } = await supabase.auth.resetPasswordForEmail(email);
-  if (error) alert("❌ " + error.message);
-  else alert("✅ ส่งลิงก์รีเซ็ตรหัสผ่านแล้ว กรุณาเช็คอีเมล");
+  if (error) {
+    alert("❌ " + error.message);
+  } else {
+    alert("✅ ส่งลิงก์รีเซ็ตรหัสผ่านแล้ว กรุณาเช็คอีเมล");
+  }
 });
 
-// Google Login
+// ✅ Google Login
 function googleLogin() {
   supabase.auth.signInWithOAuth({ provider: "google" });
 }
 
-// Twitter Login
+// ✅ Twitter Login
 function twitterLogin() {
   supabase.auth.signInWithOAuth({ provider: "twitter" });
 }
+
+// เรียกเมื่อโหลดหน้า
 checkLogin();
 </script>
-
     
     <script>
         document.addEventListener('DOMContentLoaded', function() {
