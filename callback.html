@@ -5,8 +5,29 @@
   <title>Redirecting...</title>
 </head>
 <body>
+  <p>🔄 Logging you in...</p>
+
+  <script src="https://cdn.auth0.com/js/auth0-spa-js/1.20/auth0-spa-js.production.js"></script>
   <script>
-    window.location.href = "/";
+    // ใช้ค่า domain และ client_id เดิม
+    const domain = "auth.alluna.store";
+    const clientId = "ifGQEPypwXEdThslpkNueB039fG0DD0O";
+
+    async function handleLoginRedirect() {
+      const auth0 = await createAuth0Client({
+        domain,
+        client_id: clientId,
+        cacheLocation: "localstorage"
+      });
+
+      // ✅ จัดการโทเค็นหลัง redirect
+      await auth0.handleRedirectCallback();
+
+      // ✅ redirect กลับไปยังหน้าแรก
+      window.location.href = "/";
+    }
+
+    handleLoginRedirect();
   </script>
 </body>
 </html>
