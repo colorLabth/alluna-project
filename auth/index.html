@@ -264,6 +264,20 @@
     });
   }
 
+        function lineLogin() {
+  auth0.loginWithRedirect({
+    redirect_uri: window.location.origin + "/callback.html",
+    connection: "line" // 👉 ใช้ LINE โดยตรง
+  });
+}
+
+function twitterLogin() {
+  auth0.loginWithRedirect({
+    redirect_uri: window.location.origin + "/callback.html",
+    connection: "twitter" // 👉 ใช้ Twitter โดยตรง
+  });
+}
+
   function logout() {
     auth0.logout({ returnTo: window.location.origin });
   }
