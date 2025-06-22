@@ -219,7 +219,6 @@
         </button>
     </div>
 </div>
-    document.querySelector('.bg-white.p-4.mt-2.flex.items-center.text-sm span').textContent = product.shippingCondition;
 
     <script>
 const carousel = document.getElementById('imageCarousel');
@@ -302,7 +301,7 @@ async function loadProduct() {
     document.querySelector('h1.text-lg.font-medium.mb-2').textContent = product.title;
 
     // ข้อมูลจัดส่ง
-    document.querySelector('.bg-white.p-4.mt-2.flex.items-center.text-sm span').textContent = product.shippingCondition;
+    document.querySelector('.bg-white.p-4.mt-2.flex.items-center.text-sm span').textContent = product.shippingInfo;
 
     // รายละเอียดสินค้า (ช่องรายละเอียด)
     const detailDiv = document.querySelector('.bg-white.p-4.mt-2 > div.text-sm.text-gray-700.space-y-2');
@@ -315,10 +314,10 @@ async function loadProduct() {
 
     // ข้อมูลเสริมแบรนด์ วัสดุ น้ำหนัก แหล่งผลิต
     const brandDivs = document.querySelectorAll('.bg-white.p-4.mt-2 > div.mt-4.border-t.pt-4 > div.flex.justify-between');
-    brandDivs[0].children[1].textContent = product.brand;
-    brandDivs[1].children[1].textContent = product.material;
-    brandDivs[2].children[1].textContent = product.weight;
-    brandDivs[3].children[1].textContent = product.origin;
+      brandDivs[0].children[1].textContent = product.details["แบรนด์"];
+      brandDivs[1].children[1].textContent = product.details["วัสดุ"];
+      brandDivs[2].children[1].textContent = product.details["น้ำหนัก"];
+      brandDivs[3].children[1].textContent = product.details["แหล่งผลิต"];
 
   } catch (error) {
     console.error(error);
