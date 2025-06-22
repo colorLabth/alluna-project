@@ -221,53 +221,135 @@
 </div>
 
     <script>
-    // For the image carousel
-    const carousel = document.getElementById('imageCarousel');
-    const fullCarousel = document.getElementById('fullImageCarousel');
-    const imageViewer = document.getElementById('imageViewer');
-    const currentImageText = document.getElementById('current-image');
-    let currentIndex = 0;
-    
-    // Update the image counter when scrolling
-    carousel.addEventListener('scroll', () => {
-        const scrollPosition = carousel.scrollLeft;
-        const itemWidth = carousel.offsetWidth;
-        currentIndex = Math.round(scrollPosition / itemWidth);
-        currentImageText.textContent = currentIndex + 1;
-    });
-    
-    // Open image viewer
-    function openImageViewer(index) {
-        imageViewer.classList.remove('hidden');
-        document.body.style.overflow = 'hidden';
-        
-        // Scroll to the selected image
-        fullCarousel.scrollTo({
-            left: index * fullCarousel.offsetWidth,
-            behavior: 'instant'
-        });
+const carousel = document.getElementById('imageCarousel');
+const fullCarousel = document.getElementById('fullImageCarousel');
+const imageViewer = document.getElementById('imageViewer');
+const currentImageText = document.getElementById('current-image');
+let currentIndex = 0;
+
+function getQueryParam(param) {
+  const urlParams = new URLSearchParams(window.location.search);
+  return urlParams.get(param);
+}
+
+// ฟังก์ชันเปิด/ปิด modal รูปภาพ (เหมือนเดิม)
+function openImageViewer(index) {
+  imageViewer.classList.remove('hidden');
+  document.body.style.overflow = 'hidden';
+  fullCarousel.scrollTo({
+    left: index * fullCarousel.offsetWidth,
+    behavior: 'instant'
+  });
+}
+function closeImageViewer() {
+  imageViewer.classList.add('hidden');
+  document.body.style.overflow = '';
+}
+
+// โหลดข้อมูลสินค้าและแสดงผล
+async function loadProduct() {
+  const id = getQueryParam('id');
+  if (!id) {
+    alert('ไม่พบรหัสสินค้า');
+    return;
+  }
+  try {
+    const response = await fetch('products.json');
+    const products = await response.json();
+    const product = products.find(p => p.id === id);
+    if (!product) {
+      alert('ไม่พบสินค้านี้');
+      return;
     }
-    
-    // Close image viewer
-    function closeImageViewer() {
-        imageViewer.classList.add('hidden');
-        document.body.style.overflow = '';
-    }
-    
-    // Handle swipe in full image viewer
-    fullCarousel.addEventListener('scroll', () => {
-        const scrollPosition = fullCarousel.scrollLeft;
-        const itemWidth = fullCarousel.offsetWidth;
-        const viewerIndex = Math.round(scrollPosition / itemWidth);
-        
-        // Update the main carousel position when returning
-        if (viewerIndex !== currentIndex) {
-            carousel.scrollTo({
-                left: viewerIndex * carousel.offsetWidth,
-                behavior: 'instant'
-            });
-            currentIndex = viewerIndex;
-            currentImageText.textContent = currentIndex + 1;
-        }
+
+    // อัพเดตรูปภาพ carousel (แทนที่ svg เดิม)
+    carousel.innerHTML = '';
+    fullCarousel.innerHTML = '';
+    product.images.forEach((imgUrl, i) => {
+      // สร้างภาพเล็ก
+      const thumbDiv = document.createElement('div');
+      thumbDiv.className = 'carousel-item h-full';
+      thumbDiv.onclick = () => openImageViewer(i);
+      const imgThumb = document.createElement('img');
+      imgThumb.src = imgUrl;
+      imgThumb.alt = product.title;
+      imgThumb.className = 'w-full h-full object-contain';
+      thumbDiv.appendChild(imgThumb);
+      carousel.appendChild(thumbDiv);
+
+      // สร้างภาพใหญ่ใน modal
+      const fullDiv = document.createElement('div');
+      fullDiv.className = 'carousel-item h-full flex items-center justify-center';
+      const imgFull = document.createElement('img');
+      imgFull.src = imgUrl;
+      imgFull.alt = product.title;
+      imgFull.className = 'w-full h-auto max-h-full object-contain';
+      fullDiv.appendChild(imgFull);
+      fullCarousel.appendChild(fullDiv);
     });
+
+    // อัพเดทราคา
+    document.querySelector('.text-pink-600.text-2xl.font-bold').textContent = `฿${product.price}`;
+    document.querySelector('.price-tag').textContent = `฿${product.originalPrice}`;
+    document.querySelector('.price-tag').style.position = 'relative'; // ให้เส้นขีดราคาปรากฏ
+    document.querySelector('.ml-2.bg-pink-600.text-white.text-xs.px-1.rounded').textContent = `-${product.discountPercent}%`;
+
+    // คูปอง
+    document.querySelector('.mt-1.inline-block.bg-pink-100.text-pink-600.text-xs.px-2.py-1.rounded i').nextSibling.textContent = `คูปองลด ฿${product.coupon}`;
+
+    // ชื่อสินค้า
+    document.querySelector('h1.text-lg.font-medium.mb-2').textContent = product.title;
+
+    // ข้อมูลจัดส่ง
+    document.querySelector('.bg-white.p-4.mt-2.flex.items-center.text-sm span').textContent = product.shippingCondition;
+
+    // รายละเอียดสินค้า (ช่องรายละเอียด)
+    const detailDiv = document.querySelector('.bg-white.p-4.mt-2 > div.text-sm.text-gray-700.space-y-2');
+    detailDiv.innerHTML = '';
+    product.description.forEach(line => {
+      const p = document.createElement('p');
+      p.textContent = `• ${line}`;
+      detailDiv.appendChild(p);
+    });
+
+    // ข้อมูลเสริมแบรนด์ วัสดุ น้ำหนัก แหล่งผลิต
+    const brandDivs = document.querySelectorAll('.bg-white.p-4.mt-2 > div.mt-4.border-t.pt-4 > div.flex.justify-between');
+    brandDivs[0].children[1].textContent = product.brand;
+    brandDivs[1].children[1].textContent = product.material;
+    brandDivs[2].children[1].textContent = product.weight;
+    brandDivs[3].children[1].textContent = product.origin;
+
+  } catch (error) {
+    console.error(error);
+    alert('เกิดข้อผิดพลาดในการโหลดข้อมูลสินค้า');
+  }
+}
+
+// ตัวอัพเดตตัวนับรูปภาพเวลาสไลด์
+carousel.addEventListener('scroll', () => {
+  const scrollPosition = carousel.scrollLeft;
+  const itemWidth = carousel.offsetWidth;
+  currentIndex = Math.round(scrollPosition / itemWidth);
+  currentImageText.textContent = currentIndex + 1;
+});
+
+// อัพเดต carousel modal เมื่อเลื่อนใน modal
+fullCarousel.addEventListener('scroll', () => {
+  const scrollPosition = fullCarousel.scrollLeft;
+  const itemWidth = fullCarousel.offsetWidth;
+  const viewerIndex = Math.round(scrollPosition / itemWidth);
+  if (viewerIndex !== currentIndex) {
+    carousel.scrollTo({
+      left: viewerIndex * carousel.offsetWidth,
+      behavior: 'instant'
+    });
+    currentIndex = viewerIndex;
+    currentImageText.textContent = currentIndex + 1;
+  }
+});
+
+// เรียกโหลดข้อมูลตอนเปิดหน้า
+loadProduct();
     </script>
+</body>
+</html>
