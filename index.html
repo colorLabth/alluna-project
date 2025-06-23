@@ -263,7 +263,7 @@
         </div>
         <div class="p-4">
           <p class="text-xs text-gray-500" x-text="product.category"></p>
-          <h3 class="font-medium mt-1 mb-2"><a :href="`products.html?id=${product.id}`" class="hover:underline text-pink-600" x-text="product.name"></a></h3>
+          <h3 class="font-medium mt-1 mb-2"><a :href="`product.html?id=${product.id}`" class="hover:underline text-pink-600" x-text="product.name"></a></h3>
           <div class="flex items-center space-x-2 mb-3">
             <template x-if="product.discount">
               <span class="text-gray-500 line-through text-sm" x-text="`${product.originalPrice.toLocaleString()} ฿`"></span>
@@ -393,27 +393,7 @@
     window.location.replace("/");
   }
     </script>
-
-    <script>
-const firebaseConfig = {
-  apiKey: "AIzaSyDPPVx8ghs5SD0QH6h0Lxw2I0YOv2A9ccM",
-  authDomain: "alluna.store",
-  projectId: "allunastore",
-  storageBucket: "allunastore.firebasestorage.app",
-  messagingSenderId: "839489402494",
-  appId: "1:839489402494:web:7fc04e228ad456ba97ca2f",
-  measurementId: "G-C3ZTR2BVT4"
-};
-
-      firebase.auth().onAuthStateChanged((user) => {
-    const userMenuLink = document.getElementById('user-menu-link');
-    if (user) {
-      userMenuLink.setAttribute('href', '/info');
-    } else {
-      userMenuLink.setAttribute('href', '/auth');
-    }
-  });
-    </script>
+   
 
         <!-- Alpine.js Data and Methods -->
 <script>
