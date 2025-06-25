@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>นโยบายความเป็นส่วนตัว</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Prompt', sans-serif;
+      background-color: #ffffff;
+    }
+    .policy-section h3::before {
+      content: "";
+      display: block;
+      width: 50px;
+      height: 3px;
+      background-color: #db2777;
+      margin-bottom: 12px;
+      border-radius: 2px;
+    }
+    .language-switcher {
+      position: relative;
+    }
+    .language-dropdown {
+      display: none;
+      position: absolute;
+      top: 100%;
+      right: 0;
+      background-color: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 0.375rem;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      z-index: 10;
+      min-width: 120px;
+    }
+    .language-switcher:hover .language-dropdown {
+      display: block;
+    }
+    .flag-icon {
+      width: 20px;
+      height: 15px;
+      display: inline-block;
+      vertical-align: middle;
+      margin-right: 6px;
+    }
+  </style>
+</head>
+<body class="bg-gray-50">
+<!-- Header Section -->
+<header class="bg-white shadow-sm">
+  <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+    <div class="flex justify-between items-center">
+
+      <!-- Logo -->
+      <div class="flex items-center">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-auto text-pink-600" viewBox="0 0 300 50">
+          <text x="0" y="35" font-family="Prompt, sans-serif" font-size="32" font-weight="700" fill="#db2777">ALLUNA</text>
+        </svg>
+      </div>
+
+      <!-- Language switcher and home link -->
+      <div class="flex items-center space-x-6 relative">
+        <!-- Language switcher -->
+        <div class="language-switcher relative group">
+          <!-- Language button -->
+          <button class="flex items-center text-gray-600 hover:text-pink-600 transition-colors focus:outline-none">
+            <!-- Thai flag SVG -->
+            <svg class="w-5 h-5 mr-1" viewBox="0 0 640 480" xmlns="http://www.w3.org/2000/svg">
+              <g fill-rule="evenodd">
+                <path fill="#f4f5f8" d="M0 0h640v480H0z"/>
+                <path fill="#2d2a4a" d="M0 162.5h640v160H0z"/>
+                <path fill="#a51931" d="M0 0h640v82.5H0zm0 400h640v80H0z"/>
+              </g>
+            </svg>
+            <span class="text-sm">ไทย</span>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+
+          <!-- Dropdown menu -->
+          <div class="language-dropdown absolute top-full left-0 mt-2 w-40 bg-white border rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity duration-200 z-10">
+            <!-- Thai option -->
+            <a href="#" onclick="switchLanguage('th'); return false;"
+               class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-pink-600 flex items-center">
+              <svg class="w-5 h-5 mr-2" viewBox="0 0 640 480" xmlns="http://www.w3.org/2000/svg">
+                <g fill-rule="evenodd">
+                  <path fill="#f4f5f8" d="M0 0h640v480H0z"/>
+                  <path fill="#2d2a4a" d="M0 162.5h640v160H0z"/>
+                  <path fill="#a51931" d="M0 0h640v82.5H0zm0 400h640v80H0z"/>
+                </g>
+              </svg>
+              ไทย
+            </a>
+            <!-- English option -->
+            <a href="#" onclick="switchLanguage('en'); return false;"
+               class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-pink-600 flex items-center">
+              <svg class="w-5 h-5 mr-2" viewBox="0 0 640 480" xmlns="http://www.w3.org/2000/svg">
+                <path fill="#012169" d="M0 0h640v480H0z"/>
+                <path fill="#FFF" d="M75 0l244 181L562 0h78v62L400 241l240 178v61h-80L320 301 81 480H0v-60l239-178L0 64V0h75z"/>
+                <path fill="#C8102E" d="M424 281l216 159v40L369 281h55zm-184 20l6 35L54 480H0l240-179zM640 0v3L391 191l2-44L590 0h50zM0 0l239 176h-60L0 42V0z"/>
+                <path fill="#FFF" d="M241 0v480h160V0H241zM0 160v160h640V160H0z"/>
+                <path fill="#C8102E" d="M0 193v96h640v-96H0zM273 0v480h96V0h-96z"/>
+              </svg>
+              English
+            </a>
+          </div>
+        </div>
+
+        <!-- Home link -->
+        <a href="/" class="text-gray-600 hover:text-pink-600 transition-colors text-sm flex items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+          กลับหน้าหลัก
+        </a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- Main Content -->
+<main class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="bg-white shadow-sm rounded-lg p-6 sm:p-8">
+        <!-- Thai Content -->
+        <div id="content-th">
+            <div class="flex items-center mb-8">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-pink-600 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+                <h1 class="text-3xl font-bold text-gray-800">นโยบายความเป็นส่วนตัว</h1>
+            </div>
+            
+            <p class="text-gray-600 mb-8">
+                อัปเดตล่าสุด: 1 มิถุนายน 2566
+            </p>
+            
+            <div class="space-y-10">
+                <!-- Introduction -->
+                <div>
+                    <p class="text-gray-700 leading-relaxed">
+                        Alluna Store ให้ความสำคัญกับความเป็นส่วนตัวของคุณ นโยบายความเป็นส่วนตัวนี้อธิบายวิธีที่เราเก็บรวบรวม ใช้ และปกป้องข้อมูลส่วนบุคคลของคุณ เมื่อคุณใช้บริการของเรา การใช้บริการของเราถือว่าคุณยอมรับนโยบายนี้
+                    </p>
+                </div>
+                
+                <!-- Data Collection -->
+                <div class="policy-section">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4">1. ข้อมูลที่เราเก็บรวบรวม</h3>
+                    <p class="text-gray-700 mb-4">เราอาจเก็บรวบรวมข้อมูลต่อไปนี้จากคุณ:</p>
+                    <ul class="list-disc pl-6 text-gray-700 space-y-2">
+                        <li><span class="font-medium">ข้อมูลส่วนบุคคล:</span> ชื่อ-นามสกุล, อีเมล, หมายเลขโทรศัพท์, ที่อยู่สำหรับจัดส่ง และที่อยู่สำหรับออกใบเสร็จ</li>
+                        <li><span class="font-medium">ข้อมูลการชำระเงิน:</span> รายละเอียดบัตรเครดิต (เราไม่เก็บข้อมูลบัตรเครดิตไว้ในระบบของเรา แต่ใช้ผู้ให้บริการชำระเงินที่ปลอดภัย)</li>
+                        <li><span class="font-medium">ข้อมูลการทำธุรกรรม:</span> รายละเอียดสินค้าที่คุณซื้อ, วันที่และเวลาของการซื้อ, จำนวนเงินที่ชำระ</li>
+                        <li><span class="font-medium">ข้อมูลการใช้งาน:</span> ข้อมูลเกี่ยวกับวิธีที่คุณใช้เว็บไซต์ของเรา, สินค้าที่คุณดู, ลิงก์ที่คุณคลิก</li>
+                    </ul>
+                </div>
+                
+                <!-- Data Usage -->
+                <div class="policy-section">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4">2. วิธีที่เราใช้ข้อมูลของคุณ</h3>
+                    <p class="text-gray-700 mb-4">เราใช้ข้อมูลที่เก็บรวบรวมเพื่อ:</p>
+                    <ul class="list-disc pl-6 text-gray-700 space-y-2">
+                        <li>ดำเนินการและจัดส่งคำสั่งซื้อของคุณ</li>
+                        <li>จัดการบัญชีของคุณและให้บริการลูกค้า</li>
+                        <li>ส่งการแจ้งเตือนเกี่ยวกับคำสั่งซื้อและการจัดส่ง</li>
+                        <li>ส่งข้อมูลโปรโมชันและข้อเสนอพิเศษ (หากคุณเลือกรับ)</li>
+                        <li>ปรับปรุงเว็บไซต์และสินค้าของเรา</li>
+                        <li>ป้องกันการฉ้อโกงและรักษาความปลอดภัยของเว็บไซต์</li>
+                    </ul>
+                </div>
+                
+                <!-- Data Retention -->
+                <div class="policy-section">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4">3. การเก็บรักษาและการปกป้องข้อมูล</h3>
+                    <p class="text-gray-700 mb-4">
+                        เราเก็บรักษาข้อมูลส่วนบุคคลของคุณตราบเท่าที่จำเป็นเพื่อให้บริการที่คุณร้องขอ และเพื่อปฏิบัติตามข้อกำหนดทางกฎหมาย โดยทั่วไปเราจะเก็บข้อมูลการซื้อไว้เป็นเวลา 5 ปีตามกฎหมายภาษี
+                    </p>
+                    <p class="text-gray-700 mb-4">
+                        เรามีมาตรการรักษาความปลอดภัยทางเทคนิคและทางกายภาพเพื่อปกป้องข้อมูลของคุณ รวมถึง:
+                    </p>
+                    <ul class="list-disc pl-6 text-gray-700 space-y-2">
+                        <li>การเข้ารหัสข้อมูลที่ส่งระหว่างเบราว์เซอร์ของคุณและเว็บไซต์ของเรา (SSL)</li>
+                        <li>การจำกัดการเข้าถึงข้อมูลส่วนบุคคลเฉพาะพนักงานที่จำเป็นต้องรู้</li>
+                        <li>การตรวจสอบระบบอย่างสม่ำเสมอเพื่อระบุช่องโหว่ด้านความปลอดภัย</li>
+                    </ul>
+                </div>
+                
+                <!-- Customer Rights -->
+                <div class="policy-section">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4">4. สิทธิ์ของคุณ</h3>
+                    <p class="text-gray-700 mb-4">
+                        ภายใต้กฎหมายคุ้มครองข้อมูลส่วนบุคคล คุณมีสิทธิ์:
+                    </p>
+                    <ul class="list-disc pl-6 text-gray-700 space-y-2">
+                        <li><span class="font-medium">สิทธิ์ในการเข้าถึง:</span> คุณสามารถขอสำเนาข้อมูลส่วนบุคคลที่เรามีเกี่ยวกับคุณ</li>
+                        <li><span class="font-medium">สิทธิ์ในการแก้ไข:</span> คุณสามารถขอให้เราแก้ไขข้อมูลที่ไม่ถูกต้องหรือไม่สมบูรณ์</li>
+                        <li><span class="font-medium">สิทธิ์ในการลบ:</span> คุณสามารถขอให้เราลบข้อมูลของคุณในบางกรณี</li>
+                        <li><span class="font-medium">สิทธิ์ในการจำกัดการประมวลผล:</span> คุณสามารถขอให้เราจำกัดการประมวลผลข้อมูลของคุณ</li>
+                        <li><span class="font-medium">สิทธิ์ในการคัดค้าน:</span> คุณสามารถคัดค้านการประมวลผลข้อมูลของคุณในบางกรณี</li>
+                    </ul>
+                    <p class="text-gray-700 mt-4">
+                        หากต้องการใช้สิทธิ์เหล่านี้ โปรดติดต่อเราที่ <a href="mailto:privacy@allunastore.com" class="text-pink-600 hover:underline">privacy@allunastore.com</a>
+                    </p>
+                </div>
+                
+                <!-- Cookies -->
+                <div class="policy-section">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4">5. คุกกี้และเทคโนโลยีการติดตาม</h3>
+                    <p class="text-gray-700 mb-4">
+                        เราใช้คุกกี้และเทคโนโลยีการติดตามที่คล้ายกันเพื่อเก็บรวบรวมข้อมูลเกี่ยวกับกิจกรรมออนไลน์ของคุณ คุกกี้เป็นไฟล์ข้อความขนาดเล็กที่จัดเก็บในอุปกรณ์ของคุณเมื่อคุณเยี่ยมชมเว็บไซต์
+                    </p>
+                    <p class="text-gray-700 mb-4">
+                        เราใช้คุกกี้เพื่อ:
+                    </p>
+                    <ul class="list-disc pl-6 text-gray-700 space-y-2">
+                        <li>จดจำการตั้งค่าและการกำหนดค่าของคุณ</li>
+                        <li>ติดตามรถเข็นช้อปปิ้งของคุณ</li>
+                        <li>วิเคราะห์การใช้งานเว็บไซต์ของเรา</li>
+                        <li>ปรับแต่งประสบการณ์การช้อปปิ้งของคุณ</li>
+                    </ul>
+                    <p class="text-gray-700 mt-4">
+                        เราใช้ Google Analytics เพื่อวิเคราะห์การใช้งานเว็บไซต์ของเรา Google Analytics ใช้คุกกี้เพื่อเก็บรวบรวมข้อมูลเกี่ยวกับวิธีที่คุณใช้เว็บไซต์ของเรา คุณสามารถเรียนรู้เพิ่มเติมเกี่ยวกับวิธีที่ Google ใช้ข้อมูลของคุณได้ที่ <a href="https://policies.google.com/privacy/partners" class="text-pink-600 hover:underline" target="_blank" rel="noopener noreferrer">นโยบายความเป็นส่วนตัวของ Google</a>
+                    </p>
+                    <p class="text-gray-700 mt-4">
+                        คุณสามารถตั้งค่าเบราว์เซอร์ของคุณให้ปฏิเสธคุกกี้ทั้งหมดหรือแจ้งเตือนเมื่อมีการส่งคุกกี้ อย่างไรก็ตาม หากคุณปฏิเสธคุกกี้ คุณอาจไม่สามารถใช้บางส่วนของเว็บไซต์ของเราได้
+                    </p>
+                </div>
+                
+                <!-- Changes to Policy -->
+                <div class="policy-section">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4">6. การเปลี่ยนแปลงนโยบายนี้</h3>
+                    <p class="text-gray-700">
+                        เราอาจปรับปรุงนโยบายความเป็นส่วนตัวนี้เป็นครั้งคราว เราจะแจ้งให้คุณทราบถึงการเปลี่ยนแปลงที่สำคัญโดยการโพสต์ประกาศบนเว็บไซต์ของเราหรือส่งอีเมลถึงคุณ เราขอแนะนำให้คุณตรวจสอบนโยบายนี้เป็นระยะเพื่อรับทราบข้อมูลล่าสุดเกี่ยวกับแนวทางปฏิบัติด้านความเป็นส่วนตัวของเรา
+                    </p>
+                </div>
+                
+                <!-- Contact Information -->
+                <div class="policy-section">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4">7. ติดต่อเรา</h3>
+                    <p class="text-gray-700 mb-4">
+                        หากคุณมีคำถามเกี่ยวกับนโยบายความเป็นส่วนตัวนี้หรือวิธีที่เราจัดการกับข้อมูลของคุณ โปรดติดต่อเราที่:
+                    </p>
+                    <div class="mt-4 bg-gray-50 p-4 rounded-lg">
+                        <p class="text-gray-700">อีเมล: <a href="mailto:privacy@allunastore.com" class="text-pink-600 hover:underline">privacy@allunastore.com</a></p>
+                        <p class="text-gray-700 mt-2">หรือ <a href="/contact" class="text-pink-600 hover:underline">ติดต่อเรา</a> ผ่านแบบฟอร์มบนเว็บไซต์</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- English Content (Hidden by Default) -->
+        <div id="content-en" class="hidden">
+            <div class="flex items-center mb-8">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-pink-600 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+                <h1 class="text-3xl font-bold text-gray-800">Privacy Policy</h1>
+            </div>
+            
+            <p class="text-gray-600 mb-8">
+                Last updated: June 1, 2023
+            </p>
+            
+            <div class="space-y-10">
+                <!-- Introduction -->
+                <div>
+                    <p class="text-gray-700 leading-relaxed">
+                        Alluna Store values your privacy. This Privacy Policy explains how we collect, use, and protect your personal information when you use our services. By using our services, you agree to this policy.
+                    </p>
+                </div>
+                
+                <!-- Data Collection -->
+                <div class="policy-section">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4">1. Information We Collect</h3>
+                    <p class="text-gray-700 mb-4">We may collect the following information from you:</p>
+                    <ul class="list-disc pl-6 text-gray-700 space-y-2">
+                        <li><span class="font-medium">Personal Information:</span> Name, email, phone number, shipping address, and billing address</li>
+                        <li><span class="font-medium">Payment Information:</span> Credit card details (we do not store credit card information on our systems but use secure payment providers)</li>
+                        <li><span class="font-medium">Transaction Information:</span> Details about products you purchase, date and time of purchase, amount paid</li>
+                        <li><span class="font-medium">Usage Information:</span> Information about how you use our website, products you view, links you click</li>
+                    </ul>
+                </div>
+                
+                <!-- Data Usage -->
+                <div class="policy-section">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4">2. How We Use Your Information</h3>
+                    <p class="text-gray-700 mb-4">We use the information we collect to:</p>
+                    <ul class="list-disc pl-6 text-gray-700 space-y-2">
+                        <li>Process and deliver your orders</li>
+                        <li>Manage your account and provide customer service</li>
+                        <li>Send notifications about orders and deliveries</li>
+                        <li>Send promotional information and special offers (if you opt in)</li>
+                        <li>Improve our website and products</li>
+                        <li>Prevent fraud and maintain website security</li>
+                    </ul>
+                </div>
+                
+                <!-- Data Retention -->
+                <div class="policy-section">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4">3. Data Retention and Protection</h3>
+                    <p class="text-gray-700 mb-4">
+                        We retain your personal information for as long as necessary to provide the services you request and to comply with legal requirements. Generally, we keep purchase information for 5 years as required by tax laws.
+                    </p>
+                    <p class="text-gray-700 mb-4">
+                        We have technical and physical security measures to protect your information, including:
+                    </p>
+                    <ul class="list-disc pl-6 text-gray-700 space-y-2">
+                        <li>Encryption of data transmitted between your browser and our website (SSL)</li>
+                        <li>Limiting access to personal information to employees who need to know</li>
+                        <li>Regular system checks to identify security vulnerabilities</li>
+                    </ul>
+                </div>
+                
+                <!-- Customer Rights -->
+                <div class="policy-section">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4">4. Your Rights</h3>
+                    <p class="text-gray-700 mb-4">
+                        Under data protection laws, you have rights to:
+                    </p>
+                    <ul class="list-disc pl-6 text-gray-700 space-y-2">
+                        <li><span class="font-medium">Right of access:</span> You can request a copy of the personal information we have about you</li>
+                        <li><span class="font-medium">Right to rectification:</span> You can ask us to correct inaccurate or incomplete information</li>
+                        <li><span class="font-medium">Right to erasure:</span> You can ask us to delete your information in certain cases</li>
+                        <li><span class="font-medium">Right to restrict processing:</span> You can ask us to limit the processing of your information</li>
+                        <li><span class="font-medium">Right to object:</span> You can object to the processing of your information in certain cases</li>
+                    </ul>
+                    <p class="text-gray-700 mt-4">
+                        To exercise these rights, please contact us at <a href="mailto:privacy@allunastore.com" class="text-pink-600 hover:underline">privacy@allunastore.com</a>
+                    </p>
+                </div>
+                
+                <!-- Cookies -->
+                <div class="policy-section">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4">5. Cookies and Tracking Technologies</h3>
+                    <p class="text-gray-700 mb-4">
+                        We use cookies and similar tracking technologies to collect information about your online activities. Cookies are small text files stored on your device when you visit a website.
+                    </p>
+                    <p class="text-gray-700 mb-4">
+                        We use cookies to:
+                    </p>
+                    <ul class="list-disc pl-6 text-gray-700 space-y-2">
+                        <li>Remember your settings and preferences</li>
+                        <li>Track your shopping cart</li>
+                        <li>Analyze how our website is used</li>
+                        <li>Customize your shopping experience</li>
+                    </ul>
+                    <p class="text-gray-700 mt-4">
+                        We use Google Analytics to analyze the use of our website. Google Analytics uses cookies to collect information about how you use our website. You can learn more about how Google uses your data at <a href="https://policies.google.com/privacy/partners" class="text-pink-600 hover:underline" target="_blank" rel="noopener noreferrer">Google's Privacy Policy</a>
+                    </p>
+                    <p class="text-gray-700 mt-4">
+                        You can set your browser to refuse all cookies or to alert you when a cookie is sent. However, if you refuse cookies, you may not be able to use some portions of our website.
+                    </p>
+                </div>
+                
+                <!-- Changes to Policy -->
+                <div class="policy-section">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4">6. Changes to This Policy</h3>
+                    <p class="text-gray-700">
+                        We may update this privacy policy from time to time. We will notify you of significant changes by posting a notice on our website or sending you an email. We recommend that you periodically review this policy to stay informed about our privacy practices.
+                    </p>
+                </div>
+                
+                <!-- Contact Information -->
+                <div class="policy-section">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4">7. Contact Us</h3>
+                    <p class="text-gray-700 mb-4">
+                        If you have questions about this privacy policy or how we handle your information, please contact us at:
+                    </p>
+                    <div class="mt-4 bg-gray-50 p-4 rounded-lg">
+                        <p class="text-gray-700">Email: <a href="mailto:privacy@allunastore.com" class="text-pink-600 hover:underline">privacy@allunastore.com</a></p>
+                        <p class="text-gray-700 mt-2">Or <a href="/contact" class="text-pink-600 hover:underline">Contact Us</a> through our website form</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<!-- Footer -->
+<footer class="bg-white border-t border-gray-200 mt-12">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div class="flex justify-center">
+            <p class="text-gray-500 text-sm">© 2023 Alluna Store. สงวนลิขสิทธิ์.</p>
+        </div>
+    </div>
+</footer>
+
+<script>
+    function switchLanguage(lang) {
+        const thContent = document.getElementById('content-th');
+        const enContent = document.getElementById('content-en');
+        const langButton = document.querySelector('.language-switcher button');
+        
+        if (lang === 'th') {
+            thContent.classList.remove('hidden');
+            enContent.classList.add('hidden');
+            langButton.innerHTML = `
+                <svg class="flag-icon" viewBox="0 0 640 480" xmlns="http://www.w3.org/2000/svg">
+                    <g fill-rule="evenodd">
+                        <path fill="#f4f5f8" d="M0 0h640v480H0z"/>
+                        <path fill="#2d2a4a" d="M0 162.5h640v160H0z"/>
+                        <path fill="#a51931" d="M0 0h640v82.5H0zm0 400h640v80H0z"/>
+                    </g>
+                </svg>
+                <span class="text-sm">ไทย</span>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                </svg>
+            `;
+        } else {
+            thContent.classList.add('hidden');
+            enContent.classList.remove('hidden');
+            langButton.innerHTML = `
+                <svg class="flag-icon" viewBox="0 0 640 480" xmlns="http://www.w3.org/2000/svg">
+                    <path fill="#012169" d="M0 0h640v480H0z"/>
+                    <path fill="#FFF" d="M75 0l244 181L562 0h78v62L400 241l240 178v61h-80L320 301 81 480H0v-60l239-178L0 64V0h75z"/>
+                    <path fill="#C8102E" d="M424 281l216 159v40L369 281h55zm-184 20l6 35L54 480H0l240-179zM640 0v3L391 191l2-44L590 0h50zM0 0l239 176h-60L0 42V0z"/>
+                    <path fill="#FFF" d="M241 0v480h160V0H241zM0 160v160h640V160H0z"/>
+                    <path fill="#C8102E" d="M0 193v96h640v-96H0zM273 0v480h96V0h-96z"/>
+                </svg>
+                <span class="text-sm">English</span>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                </svg>
+            `;
+        }
+    }
+</script>
+</body>
+</html>
