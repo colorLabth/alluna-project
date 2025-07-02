@@ -4,84 +4,13 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>SparkTopo Chat</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #1f1f1f;
-      color: #fff;
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
-    }
-    header {
-      background-color: #000;
-      padding: 1rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-bottom: 1px solid #444;
-    }
-    .chat-container {
-      flex: 1;
-      overflow-y: auto;
-      padding: 1rem;
-      display: flex;
-      flex-direction: column;
-    }
-    .message {
-      max-width: 70%;
-      padding: 0.75rem 1rem;
-      margin: 0.25rem 0;
-      border-radius: 1rem;
-      line-height: 1.4;
-    }
-    .user-message {
-      background-color: #444;
-      align-self: flex-end;
-    }
-    .bot-message {
-      background-color: #8a2be2;
-      align-self: flex-start;
-    }
-    .input-area {
-      display: flex;
-      padding: 1rem;
-      border-top: 1px solid #444;
-      background-color: #121212;
-    }
-    .input-area input {
-      flex: 1;
-      padding: 0.75rem;
-      font-size: 1rem;
-      border: none;
-      border-radius: 1rem;
-      outline: none;
-      margin-right: 0.5rem;
-      background-color: #2c2c2c;
-      color: #fff;
-    }
-    .input-area button {
-      padding: 0.75rem 1rem;
-      background-color: #ff49a8;
-      border: none;
-      border-radius: 1rem;
-      color: #fff;
-      cursor: pointer;
-    }
-  </style>
 </head>
-<body>
-  <header>
-    <div><strong>SparkTopo</strong> AI Chat</div>
-    <div style="color: #4caf50">● Online</div>
-  </header>
-
-  <div class="chat-container" id="chat"></div>
-
-  <form class="input-area" id="chat-form">
-    <input type="text" id="user-input" placeholder="พิมพ์ข้อความ..." autocomplete="off" required />
-    <button type="submit">ส่ง</button>
+<body style="margin:0;padding:0;background:#1f1f1f;color:white;font-family:sans-serif;display:flex;flex-direction:column;height:100vh">
+  <h1 style="background:#000;padding:1rem;margin:0">SparkTopo Chat</h1>
+  <div id="chat" style="flex:1;overflow-y:auto;padding:1rem;"></div>
+  <form id="chat-form" style="display:flex;padding:1rem;background:#121212;border-top:1px solid #444">
+    <input id="user-input" type="text" placeholder="พิมพ์ข้อความ..." style="flex:1;padding:0.5rem;border-radius:10px;border:none;background:#2c2c2c;color:white" />
+    <button type="submit" style="margin-left:0.5rem;padding:0.5rem 1rem;border:none;border-radius:10px;background:#ff49a8;color:white">ส่ง</button>
   </form>
 
   <script>
@@ -89,50 +18,56 @@
     const form = document.getElementById('chat-form');
     const input = document.getElementById('user-input');
 
+    const apiKey = "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";
+
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const userMessage = input.value.trim();
-      if (!userMessage) return;
-      
-      addMessage(userMessage, 'user');
+      const userText = input.value.trim();
+      if (!userText) return;
+
+      showMessage(userText, 'คุณ');
       input.value = '';
+      showMessage('กำลังพิมพ์...', 'SparkTopo', true);
 
-      addMessage('กำลังพิมพ์...', 'bot', true);
+      try {
+        const res = await fetch("https://api.openai.com/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${apiKey}`
+          },
+          body: JSON.stringify({
+            model: "gpt-3.5-turbo",
+            messages: [
+              { role: "system", content: "คุณคือผู้ช่วยอัจฉริยะชื่อ SparkTopo" },
+              { role: "user", content: userText }
+            ]
+          })
+        });
 
-      const response = await fetch('https://api.openai.com/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer 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'
-        },
-        body: JSON.stringify({
-          model: 'gpt-3.5-turbo',
-          messages: [
-            { role: 'system', content: 'คุณคือผู้ช่วยอัจฉริยะชื่อ SparkTopo' },
-            { role: 'user', content: userMessage }
-          ]
-        })
-      });
-
-      const data = await response.json();
-      const botMessage = data.choices?.[0]?.message?.content || 'เกิดข้อผิดพลาด';
-
-      removeTyping();
-      addMessage(botMessage, 'bot');
+        const data = await res.json();
+        removeTyping();
+        const reply = data.choices?.[0]?.message?.content || "❌ เกิดข้อผิดพลาด";
+        showMessage(reply, 'SparkTopo');
+      } catch (err) {
+        removeTyping();
+        showMessage("❌ ไม่สามารถเชื่อมต่อ API ได้", 'SparkTopo');
+        console.error(err);
+      }
     });
 
-    function addMessage(text, sender, typing = false) {
+    function showMessage(text, sender, isTyping = false) {
       const msg = document.createElement('div');
-      msg.className = `message ${sender}-message`;
-      msg.textContent = text;
-      if (typing) msg.id = 'typing';
+      msg.textContent = `${sender}: ${text}`;
+      msg.style.margin = '0.5rem 0';
+      msg.dataset.typing = isTyping;
       chat.appendChild(msg);
       chat.scrollTop = chat.scrollHeight;
     }
 
     function removeTyping() {
-      const typing = document.getElementById('typing');
-      if (typing) typing.remove();
+      const typing = [...chat.querySelectorAll('[data-typing=\"true\"]')];
+      typing.forEach(el => el.remove());
     }
   </script>
 </body>
