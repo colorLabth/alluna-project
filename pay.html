@@ -6,73 +6,37 @@
   <title>ชำระเงิน TrueMoney</title>
 </head>
 <body>
-  <h1>ตัวอย่างสร้างลิงก์รับเงินอัตโนมัติ</h1>
+  <h1>สร้างลิงก์รับเงิน TrueMoney</h1>
 
-  <label>เบอร์ผู้รับ (10 หลัก):</label>
-  <input type="text" id="mobile" placeholder="0812345678" maxlength="10" />
-  <br /><br />
+  <label>เบอร์ผู้รับ (10 หลัก):</label><br />
+  <input type="text" id="mobile" placeholder="0812345678" maxlength="10"><br /><br />
 
-  <label>ยอดเงิน (บาท):</label>
-  <input type="number" id="amount" step="0.01" value="100" />
-  <button onclick="autoFill()">ยอดอัตโนมัติ</button>
-  <br /><br />
+  <label>จำนวนเงิน (บาท):</label><br />
+  <input type="number" id="amount" value="100" step="0.01"><br /><br />
 
-  <label>ข้อความ (ไม่เกิน 140 ตัวอักษร):</label>
-  <input type="text" id="message" placeholder="เติมเกมกับร้าน A" maxlength="140" />
-  <br /><br />
+  <label>ข้อความ:</label><br />
+  <input type="text" id="message" placeholder="เติมเกมกับร้านคุณ"><br /><br />
 
   <button onclick="createPayment()">สร้างลิงก์ชำระเงิน</button>
 
   <script>
-    function autoFill() {
-      const random = (Math.random() * (500 - 50) + 50).toFixed(2);
-      document.getElementById('amount').value = random;
-      alert('ยอดเงินถูกสุ่มเป็น ' + random + ' บาท');
-    }
-
-    function validateInput(mobile, amount, message) {
-      const mobileRegex = /^0\d{9}$/;
-      if (!mobileRegex.test(mobile)) {
-        alert('กรุณากรอกเบอร์มือถือ 10 หลักให้ถูกต้อง');
-        return false;
-      }
-      if (isNaN(amount) || Number(amount) <= 0) {
-        alert('กรุณากรอกยอดเงินที่ถูกต้องมากกว่า 0');
-        return false;
-      }
-      if (message.length > 140) {
-        alert('ข้อความต้องไม่เกิน 140 ตัวอักษร');
-        return false;
-      }
-      return true;
-    }
-
     async function createPayment() {
       const mobile = document.getElementById('mobile').value.trim();
       const amount = document.getElementById('amount').value.trim();
       const message = document.getElementById('message').value.trim();
 
-      if (!validateInput(mobile, amount, message)) return;
+      const res = await fetch('https://torch-easy-knuckle.glitch.me/create-link', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mobile_number: mobile, amount, message })
+      });
 
-      // เปลี่ยน URL นี้เป็น URL ของโปรเจกต์ Glitch คุณ (เช่น https://your-glitch-app.glitch.me/create-link)
-      const apiUrl = 'https://far-far-debt.glitch.me/create-link';
+      const data = await res.json();
 
-      try {
-        const res = await fetch(apiUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ mobile_number: mobile, amount, message }),
-        });
-
-        const data = await res.json();
-
-        if (data.success) {
-          window.location.href = data.link; // เปิดแอป TrueMoney พร้อมยอดเงิน
-        } else {
-          alert('Error: ' + (data.error || 'สร้างลิงก์ไม่สำเร็จ'));
-        }
-      } catch (err) {
-        alert('เกิดข้อผิดพลาด: ' + err.message);
+      if (data.success) {
+        window.location.href = data.link;
+      } else {
+        alert('เกิดข้อผิดพลาด: ' + (data.error || 'ไม่สามารถสร้างลิงก์ได้'));
       }
     }
   </script>
