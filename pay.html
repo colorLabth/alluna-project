@@ -1,26 +1,35 @@
 <!DOCTYPE html>
 <html lang="th">
-<head><meta charset="UTF-8"><title>ชำระเงิน TrueMoney</title></head>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ชำระผ่าน TrueMoney</title>
+</head>
 <body>
-  <h1>สร้างลิงก์รับเงิน TrueMoney</h1>
-  <label>เบอร์ 10 หลัก:</label><input id="mobile"><br>
-  <label>ยอด (฿):</label><input type="number" id="amount" value="100"><br>
-  <label>ข้อความ:</label><input id="message"><br>
-  <button onclick="createPayment()">สร้างลิงก์ชำระเงิน</button>
+  <h2>กรอกจำนวนเงินเพื่อชำระเงิน</h2>
+  <input type="number" id="amount" placeholder="จำนวนเงิน เช่น 100.00" /><br/>
+  <button onclick="createLink()">สร้างลิงก์ชำระเงิน</button>
 
   <script>
-    async function createPayment() {
-      const mobile = document.getElementById('mobile').value.trim();
-      const amount = document.getElementById('amount').value.trim();
-      const message = document.getElementById('message').value.trim();
-      const res = await fetch('https://heathered-lyrical-lamp.glitch.me/create-link', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({ mobile_number: mobile, amount, message })
+    async function createLink() {
+      const amount = document.getElementById("amount").value;
+      const mobile_number = "0812345678"; // ใส่เบอร์ปลายทางของร้าน
+      const message = "เติมเงินผ่านเว็บ";
+
+      const res = await fetch("https://0299a775-7cda-4221-a885-4784509175e3-00-2tqni8dqfsq39.pike.replit.dev/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ amount, mobile_number, message })
       });
+
       const data = await res.json();
-      if (data.success) window.location.href = data.link;
-      else alert('Error: ' + (data.error || 'ลิงก์ไม่สำเร็จ'));
+      if (data.success && data.payment_url) {
+        window.location.href = data.payment_url;
+      } else {
+        alert("สร้างลิงก์ไม่สำเร็จ: " + (data.error || "ไม่ทราบสาเหตุ"));
+      }
     }
   </script>
 </body>
