@@ -151,7 +151,7 @@
         <!-- Chat Area -->
         <div class="flex-1 flex flex-col min-h-0">
             <!-- Messages Container -->
-            <div id="chatContainer" class="flex-1 overflow-y-auto chat-scroll px-6 pt-24 pb-40 space-y-6">
+            <div id="chatContainer" class="flex-1 overflow-y-auto chat-scroll px-6 pt-[88px] pb-[104px] space-y-6">
                 
                 <!-- Initial AI Message -->
                 <div class="flex justify-start message-slide-in">
@@ -514,6 +514,12 @@
                 }, 100);
             }
         }
+
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'F5' || (e.ctrlKey && e.key === 'r')) {
+                e.preventDefault();
+            }
+        });
 
         // Initialize the chat when page loads
         document.addEventListener('DOMContentLoaded', () => {
