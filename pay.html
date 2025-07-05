@@ -37,7 +37,9 @@
       });
 
       const data = await res.json();
-      console.log(data); // ดู error ถ้ามี
+console.log("📦 ตอบกลับจาก API:", data); // ← เพิ่มบรรทัดนี้
+
+if (data.success && data.url) {
 
       if (data.success && data.url) {
         window.location.href = data.url;
