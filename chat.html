@@ -25,23 +25,14 @@
     </script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        /* CSS */
-        html, body {
-  overscroll-behavior: none;
-  touch-action: manipulation;
-  overflow-x: hidden;
-  -webkit-overflow-scrolling: touch;
-}
-
-.chat-scroll {
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-  overflow-y: scroll;
-}
-
-.chat-scroll::-webkit-scrollbar {
-  display: none;
-}
+        /* Hide all scrollbars globally */
+    * {
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+    *::-webkit-scrollbar {
+        display: none;
+    }
         
         .typing-dots {
             animation: typing 1.4s infinite ease-in-out;
