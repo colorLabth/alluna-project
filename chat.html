@@ -39,13 +39,6 @@
             background: rgba(156, 163, 175, 0.5);
         }
 
-        .chatInput {
-            max-height: 120px;
-            min-height: 40px;
-            overflow-y: auto;
-            transition: border 0.2s;
-        }
-        
         .typing-dots {
             animation: typing 1.4s infinite ease-in-out;
         }
@@ -103,15 +96,9 @@
         .copy-popup.show {
             transform: translateY(0);
             opacity: 1;
-            visibility: visible;
+            visibility: visible; 
         }
-
-        .messageInput {
-            max-height: 120px;
-            min-height: 48px;
-            overflow-y: auto;
-            transition: border 0.2s;
-        }
+        
         .theme-transition {
             transition: all 0.3s ease;
         }
@@ -198,37 +185,39 @@
                 </div>
             </div>
 
-            <!-- input Area -->
-            <div class="fixed bottom-0 left-0 w-full z-50 border-t border-spark-border bg-spark-gray p-4">
-  <div class="flex items-center space-x-3">
-    <!-- Attachment Button -->
-    <button id="attachButton" class="text-gray-400 hover:text-white transition p-2 hover:scale-110 transform flex-shrink-0" onclick="document.getElementById('imageInput').click()">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/>
-        </svg>
-    </button>
-    <input id="imageInput" type="file" class="hidden" accept="image/*" />
-    <!-- Text Input -->
-    <div class="flex-1 relative">
-      <textarea 
-        id="messageInput"
-        placeholder="พิมพ์ข้อความ..."
-        class="w-full bg-spark-dark border border-spark-border rounded-2xl px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-white transition resize-none min-h-[48px]"
-        rows="1"
-      ></textarea>
-    </div>
-    <!-- Send Button -->
-    <button 
-      id="sendButton" 
-      class="bg-white text-black p-3 rounded-full hover:bg-gray-200 transition hover:scale-110 transform active:scale-95 flex-shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
-    >
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
-        </svg>
-    </button>
-  </div>
+            <!-- Input Area -->
+            <div class="p-4 pb-6 border-t border-spark-border bg-spark-gray">
+                <div class="flex items-center space-x-3">
+                    <!-- Attachment Button -->
+                    <button id="attachButton" class="text-gray-400 hover:text-white transition p-2 hover:scale-110 transform flex-shrink-0">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/>
+                        </svg>
+                    </button>
+                    
+                    <!-- Text Input -->
+                    <div class="flex-1 relative">
+                        <textarea 
+                            id="messageInput"
+                            placeholder="พิมพ์ข้อความ..."
+                            class="w-full bg-spark-dark border border-spark-border rounded-2xl px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-white transition resize-none min-h-[48px]"
+                            rows="1"
+                        ></textarea>
+                    </div>
+                    
+                    <!-- Send Button -->
+                    <button 
+                        id="sendButton" 
+                        class="bg-white text-black p-3 rounded-full hover:bg-gray-200 transition hover:scale-110 transform active:scale-95 flex-shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+                        </svg>
+                    </button>
+                </div>
             </div>
-          
+        </div>
+    </div>
 
     <!-- Copy Success Popup -->
     <div id="copyPopup" class="copy-popup fixed top-20 left-1/2 transform -translate-x-1/2 bg-green-600 border border-green-500 rounded-xl px-4 py-2 shadow-xl z-50">
@@ -523,12 +512,6 @@
 
                 return responses[Math.floor(Math.random() * responses.length)];
             }
-
-            const messageInput = document.getElementById('messageInput');
-            messageInput.addEventListener('input', () => {
-            messageInput.style.height = 'auto';
-            messageInput.style.height = Math.min(messageInput.scrollHeight, 120) + 'px';
-});
 
             scrollToBottom() {
                 setTimeout(() => {
