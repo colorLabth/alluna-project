@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SparkTopo - AI Chat Interface</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'thai': ['Inter', 'Noto Sans Thai', 'sans-serif']
+                    },
+                    colors: {
+                        'spark-dark': '#0a0a0a',
+                        'spark-gray': '#1a1a1a',
+                        'spark-light': '#2a2a2a',
+                        'spark-border': '#333333',
+                        'spark-text': '#e5e7eb'
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .chat-scroll::-webkit-scrollbar {
+            width: 4px;
+        }
+        .chat-scroll::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .chat-scroll::-webkit-scrollbar-thumb {
+            background: rgba(156, 163, 175, 0.3);
+            border-radius: 2px;
+        }
+        .chat-scroll::-webkit-scrollbar-thumb:hover {
+            background: rgba(156, 163, 175, 0.5);
+        }
+        
+        .typing-dots {
+            animation: typing 1.4s infinite ease-in-out;
+        }
+        .typing-dots:nth-child(1) { animation-delay: 0s; }
+        .typing-dots:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dots:nth-child(3) { animation-delay: 0.4s; }
+        
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+            30% { transform: translateY(-10px); opacity: 1; }
+        }
+        
+        .message-slide-in {
+            animation: slideInUp 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        
+        .hover-lift {
+            transition: all 0.2s ease;
+        }
+        .hover-lift:hover {
+            transform: translateY(-1px);
+        }
+        
+        .menu-dropdown {
+            transform: translateY(-10px);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.2s ease;
+        }
+        
+        .menu-dropdown.show {
+            transform: translateY(0);
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .copy-popup {
+            transform: translateY(10px);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.2s ease;
+        }
+        
+        .copy-popup.show {
+            transform: translateY(0);
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .theme-transition {
+            transition: all 0.3s ease;
+        }
+    </style>
+</head>
+<body class="bg-spark-dark text-spark-text font-thai antialiased theme-transition" id="body">
+    <!-- Main Container -->
+    <div class="flex flex-col h-screen max-w-4xl mx-auto bg-spark-gray shadow-2xl theme-transition" id="mainContainer">
+        
+        <!-- Header -->
+        <header class="bg-spark-gray border-b border-spark-border px-6 py-4 flex items-center justify-between theme-transition">
+            <div class="flex items-center space-x-4">
+                <!-- Logo -->
+                <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-lg">
+                    <svg class="w-6 h-6 text-black" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2L13.09 8.26L22 9L13.09 9.74L12 16L10.91 9.74L2 9L10.91 8.26L12 2Z"/>
+                        <path d="M19 15L20.09 18.26L24 19L20.09 19.74L19 23L17.91 19.74L14 19L17.91 18.26L19 15Z"/>
+                        <path d="M5 15L6.09 18.26L10 19L6.09 19.74L5 23L3.91 19.74L0 19L3.91 18.26L5 15Z"/>
+                    </svg>
+                </div>
+                
+                <!-- Title -->
+                <div>
+                    <h1 class="text-xl font-bold text-white">SparkTopo</h1>
+                </div>
+            </div>
+            
+            <!-- Menu Button -->
+            <div class="relative">
+                <button id="menuButton" class="p-2 hover:bg-spark-light rounded-xl transition-all hover-lift">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"/>
+                    </svg>
+                </button>
+                
+                <!-- Dropdown Menu -->
+                <div id="menuDropdown" class="menu-dropdown absolute right-0 top-12 bg-spark-light border border-spark-border rounded-xl shadow-xl w-48 py-2 z-50">
+                    <button id="resetChat" class="w-full px-4 py-2 text-left hover:bg-spark-border transition-colors flex items-center space-x-3">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                        </svg>
+                        <span>รีเซ็ตแชท</span>
+                    </button>
+                    <button id="chatHistory" class="w-full px-4 py-2 text-left hover:bg-spark-border transition-colors flex items-center space-x-3">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        <span>ประวัติแชท</span>
+                    </button>
+
+                </div>
+            </div>
+        </header>
+
+        <!-- Chat Area -->
+        <div class="flex-1 flex flex-col min-h-0">
+            <!-- Messages Container -->
+            <div id="chatContainer" class="flex-1 overflow-y-auto chat-scroll px-6 py-6 space-y-6">
+                
+                <!-- Initial AI Message -->
+                <div class="flex justify-start message-slide-in">
+                    <div class="max-w-xs md:max-w-md relative group">
+                        <div class="bg-spark-light rounded-3xl rounded-tl-lg px-5 py-4 shadow-lg border border-spark-border theme-transition">
+                            <p class="text-spark-text leading-relaxed">
+                                ยินดีต้อนรับสู่ SparkTopo<br>
+                                ผมคือ AI Assistant ที่พร้อมช่วยเหลือคุณในทุกเรื่อง<br>
+                                เริ่มต้นการสนทนาได้เลยครับ! 🚀
+                            </p>
+                        </div>
+                        <!-- AI Message Actions -->
+                        <div class="flex items-center space-x-2 mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <button class="ai-copy-btn p-1 hover:bg-spark-light rounded transition-colors" data-message="ยินดีต้อนรับสู่ SparkTopo ผมคือ AI Assistant ที่พร้อมช่วยเหลือคุณในทุกเรื่อง เริ่มต้นการสนทนาได้เลยครับ! 🚀">
+                                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                                </svg>
+                            </button>
+                            <button class="ai-feedback-btn p-1 hover:bg-spark-light rounded transition-colors">
+                                <svg class="w-4 h-4 text-gray-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+          <!-- Input Area -->
+            <div class="p-4 pb-6 border-t border-spark-border bg-spark-gray">
+                <div class="flex items-center space-x-3">
+                    <!-- Attachment Button -->
+                    <button id="attachButton" class="text-gray-400 hover:text-white transition p-2 hover:scale-110 transform flex-shrink-0">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/>
+                        </svg>
+                    </button>
+                    
+                    <!-- Text Input -->
+                    <div class="flex-1 relative">
+                        <textarea 
+                            id="messageInput"
+                            placeholder="พิมพ์ข้อความ..."
+                            class="w-full bg-spark-dark border border-spark-border rounded-2xl px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-white transition resize-none min-h-[48px]"
+                            rows="1"
+                        ></textarea>
+                    </div>
+                    
+                    <!-- Send Button -->
+                    <button 
+                        id="sendButton" 
+                        class="bg-white text-black p-3 rounded-full hover:bg-gray-200 transition hover:scale-110 transform active:scale-95 flex-shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Copy Success Popup -->
+    <div id="copyPopup" class="copy-popup fixed top-20 left-1/2 transform -translate-x-1/2 bg-green-600 border border-green-500 rounded-xl px-4 py-2 shadow-xl z-50">
+        <div class="flex items-center space-x-2">
+            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+            </svg>
+            <span class="text-white text-sm font-medium">คัดลอกแล้ว</span>
+        </div>
+    </div>
+
+    <script>
+        class SparkTopoChat {
+            constructor() {
+                this.chatContainer = document.getElementById('chatContainer');
+                this.messageInput = document.getElementById('messageInput');
+                this.sendButton = document.getElementById('sendButton');
+                this.typingIndicator = document.getElementById('typingIndicator');
+                this.attachButton = document.getElementById('attachButton');
+                this.menuButton = document.getElementById('menuButton');
+                this.menuDropdown = document.getElementById('menuDropdown');
+                this.resetChat = document.getElementById('resetChat');
+                this.chatHistory = document.getElementById('chatHistory');
+                this.copyPopup = document.getElementById('copyPopup');
+                
+                this.isTyping = false;
+                
+                this.initializeEventListeners();
+                this.autoResizeTextarea();
+            }
+
+            initializeEventListeners() {
+                // Send message events
+                this.sendButton.addEventListener('click', () => this.sendMessage());
+                this.messageInput.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        this.sendMessage();
+                    }
+                });
+
+                // Button state
+                this.messageInput.addEventListener('input', () => {
+                    const length = this.messageInput.value.length;
+                    this.sendButton.disabled = length === 0;
+                });
+
+                // Menu functionality
+                this.menuButton.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    this.toggleMenu();
+                });
+
+                document.addEventListener('click', () => {
+                    this.closeMenu();
+                });
+
+                // Menu actions
+                this.resetChat.addEventListener('click', () => this.resetChatHistory());
+                this.chatHistory.addEventListener('click', () => this.showChatHistory());
+
+                // Attachment button
+                this.attachButton.addEventListener('click', () => this.handleAttachment());
+
+                // Copy functionality for AI messages
+                document.addEventListener('click', (e) => {
+                    if (e.target.closest('.ai-copy-btn')) {
+                        const button = e.target.closest('.ai-copy-btn');
+                        const message = button.dataset.message;
+                        this.copyToClipboard(message);
+                    }
+                    
+                    if (e.target.closest('.ai-feedback-btn')) {
+                        const button = e.target.closest('.ai-feedback-btn');
+                        this.handleFeedback(button);
+                    }
+                });
+            }
+
+            autoResizeTextarea() {
+                this.messageInput.addEventListener('input', () => {
+                    this.messageInput.style.height = 'auto';
+                    this.messageInput.style.height = Math.min(this.messageInput.scrollHeight, 128) + 'px';
+                });
+            }
+
+            toggleMenu() {
+                this.menuDropdown.classList.toggle('show');
+            }
+
+            closeMenu() {
+                this.menuDropdown.classList.remove('show');
+            }
+
+
+
+            resetChatHistory() {
+                this.chatContainer.innerHTML = `
+                    <div class="flex justify-start message-slide-in">
+                        <div class="max-w-xs md:max-w-md relative group">
+                            <div class="bg-spark-light rounded-3xl rounded-tl-lg px-5 py-4 shadow-lg border border-spark-border theme-transition">
+                                <p class="text-spark-text leading-relaxed">
+                                    ยินดีต้อนรับสู่ SparkTopo<br>
+                                    ผมคือ AI Assistant ที่พร้อมช่วยเหลือคุณในทุกเรื่อง<br>
+                                    เริ่มต้นการสนทนาได้เลยครับ! 🚀
+                                </p>
+                            </div>
+                            <div class="flex items-center space-x-2 mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <button class="ai-copy-btn p-1 hover:bg-spark-light rounded transition-colors" data-message="ยินดีต้อนรับสู่ SparkTopo ผมคือ AI Assistant ที่พร้อมช่วยเหลือคุณในทุกเรื่อง เริ่มต้นการสนทนาได้เลยครับ! 🚀">
+                                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                                        </svg>
+                                </button>
+                                <button class="ai-feedback-btn p-1 hover:bg-spark-light rounded transition-colors">
+                                    <svg class="w-4 h-4 text-gray-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                this.closeMenu();
+            }
+
+            showChatHistory() {
+                this.addMessage("📋 ฟีเจอร์ประวัติแชทกำลังพัฒนาอยู่ครับ เร็วๆ นี้จะสามารถดูประวัติการสนทนาย้อนหลังได้!", 'ai');
+                this.closeMenu();
+            }
+
+            handleAttachment() {
+                this.addMessage("📎 ฟีเจอร์อัพโหลดไฟล์กำลังพัฒนาอยู่ครับ เร็วๆ นี้จะสามารถแนบรูปภาพและเอกสารได้!", 'ai');
+            }
+
+
+
+            handleFeedback(button) {
+                const svg = button.querySelector('svg');
+                const isLiked = button.classList.contains('liked');
+                
+                if (isLiked) {
+                    // Unlike
+                    button.classList.remove('liked');
+                    svg.setAttribute('fill', 'none');
+                    svg.classList.remove('text-red-500');
+                    svg.classList.add('text-gray-400');
+                } else {
+                    // Like
+                    button.classList.add('liked');
+                    svg.setAttribute('fill', 'currentColor');
+                    svg.classList.remove('text-gray-400');
+                    svg.classList.add('text-red-500');
+                }
+            }
+
+            async copyToClipboard(text) {
+                try {
+                    await navigator.clipboard.writeText(text);
+                    this.showCopyPopup();
+                } catch (err) {
+                    console.error('Failed to copy text: ', err);
+                }
+            }
+
+            showCopyPopup() {
+                this.copyPopup.classList.add('show');
+                setTimeout(() => {
+                    this.copyPopup.classList.remove('show');
+                }, 2000);
+            }
+
+            async sendMessage() {
+                const message = this.messageInput.value.trim();
+                if (!message) return;
+
+                // Add user message
+                this.addMessage(message, 'user');
+                this.messageInput.value = '';
+                this.messageInput.style.height = 'auto';
+                this.sendButton.disabled = true;
+
+                // Show typing indicator
+                this.showTypingIndicator();
+
+                // Simulate AI response
+                await this.simulateAIResponse(message);
+            }
+
+            addMessage(content, sender) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = 'message-slide-in';
+
+                if (sender === 'user') {
+                    messageDiv.innerHTML = `
+                        <div class="flex justify-end">
+                            <div class="max-w-xs md:max-w-md">
+                                <div class="bg-white text-black rounded-3xl rounded-tr-lg px-5 py-4 shadow-lg">
+                                    <p class="leading-relaxed">${content}</p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    messageDiv.innerHTML = `
+                        <div class="flex justify-start">
+                            <div class="max-w-xs md:max-w-md relative group">
+                                <div class="bg-spark-light rounded-3xl rounded-tl-lg px-5 py-4 shadow-lg border border-spark-border theme-transition">
+                                    <p class="text-spark-text leading-relaxed">${content}</p>
+                                </div>
+                                <div class="flex items-center space-x-2 mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <button class="ai-copy-btn p-1 hover:bg-spark-light rounded transition-colors" data-message="${content.replace(/"/g, '&quot;')}">
+                                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                                        </svg>
+                                    </button>
+                                    <button class="ai-feedback-btn p-1 hover:bg-spark-light rounded transition-colors">
+                                        <svg class="w-4 h-4 text-gray-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+
+                this.chatContainer.appendChild(messageDiv);
+                this.scrollToBottom();
+            }
+
+            showTypingIndicator() {
+                // Create typing indicator in chat
+                const typingDiv = document.createElement('div');
+                typingDiv.className = 'message-slide-in';
+                typingDiv.id = 'currentTyping';
+                typingDiv.innerHTML = `
+                    <div class="flex justify-start">
+                        <div class="max-w-xs md:max-w-md">
+                            <div class="bg-spark-light rounded-3xl rounded-tl-lg px-5 py-4 shadow-lg border border-spark-border">
+                                <div class="flex space-x-1">
+                                    <div class="w-2 h-2 bg-gray-400 rounded-full typing-dots"></div>
+                                    <div class="w-2 h-2 bg-gray-400 rounded-full typing-dots"></div>
+                                    <div class="w-2 h-2 bg-gray-400 rounded-full typing-dots"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                this.chatContainer.appendChild(typingDiv);
+                this.isTyping = true;
+                this.scrollToBottom();
+            }
+
+            hideTypingIndicator() {
+                const typingElement = document.getElementById('currentTyping');
+                if (typingElement) {
+                    typingElement.remove();
+                }
+                this.isTyping = false;
+            }
+
+            async simulateAIResponse(userMessage) {
+                await new Promise(resolve => setTimeout(resolve, 800 + Math.random() * 1500));
+                
+                this.hideTypingIndicator();
+                let response = this.generateResponse(userMessage);
+                this.addMessage(response, 'ai');
+            }
+
+            generateResponse(message) {
+                const lowerMessage = message.toLowerCase();
+                
+                if (lowerMessage.includes('สวัสดี') || lowerMessage.includes('หวัดดี')) {
+                    return "สวัสดีครับ! ยินดีที่ได้รู้จักคุณ 😊 มีอะไรให้ผมช่วยเหลือไหมครับ?";
+                } 
+                
+                if (lowerMessage.includes('ขอบคุณ')) {
+                    return "ยินดีครับ! ผมมีความสุขที่ได้ช่วยเหลือคุณ ✨ มีอะไรอื่นอีกไหมครับ?";
+                }
+                
+                if (lowerMessage.includes('ลาก่อน') || lowerMessage.includes('บาย')) {
+                    return "ลาก่อนครับ! หวังว่าจะได้พบกันใหม่เร็วๆ นี้ 👋 ขอให้มีความสุขนะครับ!";
+                }
+
+                const responses = [
+                    "น่าสนใจมากเลยครับ! ขอให้ผมช่วยคิดหาคำตอบที่ดีที่สุดให้คุณนะครับ 🤔",
+                    "ขอบคุณที่แบ่งปันความคิดครับ ผมเข้าใจสิ่งที่คุณต้องการแล้ว 💡",
+                    "เยี่ยมมากครับ! SparkTopo พร้อมช่วยเหลือคุณในทุกเรื่อง ⭐",
+                    "ผมชอบแนวคิดนี้มากเลยครับ! มาลองพัฒนาต่อกันดีกว่า 🚀",
+                    "คำถามที่ดีมากครับ ให้ผมอธิบายให้ฟังแบบละเอียดนะครับ 📚"
+                ];
+
+                return responses[Math.floor(Math.random() * responses.length)];
+            }
+
+            scrollToBottom() {
+                setTimeout(() => {
+                    this.chatContainer.scrollTop = this.chatContainer.scrollHeight;
+                }, 100);
+            }
+        }
+
+        // Initialize the chat when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            new SparkTopoChat();
+        });
+    </script>
+</body>
+</html>
