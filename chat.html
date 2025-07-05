@@ -109,7 +109,7 @@
     <div class="flex flex-col h-screen max-w-4xl mx-auto bg-spark-gray shadow-2xl theme-transition" id="mainContainer">
         
         <!-- Header -->
-        <header class="bg-spark-gray border-b border-spark-border px-6 py-4 flex items-center justify-between theme-transition">
+        <header class="fixed top-0 left-0 right-0 bg-spark-gray border-b border-spark-border px-6 py-4 flex items-center justify-between z-50">
             <div class="flex items-center space-x-4">
                 <!-- Logo -->
                 <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-lg">
@@ -156,7 +156,7 @@
         <!-- Chat Area -->
         <div class="flex-1 flex flex-col min-h-0">
             <!-- Messages Container -->
-            <div id="chatContainer" class="flex-1 overflow-y-auto chat-scroll px-6 py-6 space-y-6">
+            <div id="chatContainer" class="flex-1 overflow-y-auto chat-scroll px-6 pt-24 pb-40 space-y-6">
                 
                 <!-- Initial AI Message -->
                 <div class="flex justify-start message-slide-in">
@@ -184,9 +184,9 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Input Area -->
-            <div class="p-4 pb-6 border-t border-spark-border bg-spark-gray">
+          
+            <!-- Input Area --> 
+            <div class="fixed bottom-0 left-0 right-0 p-4 pb-6 border-t border-spark-border bg-spark-gray z-50">
                 <div class="flex items-center space-x-3">
                     <!-- Attachment Button -->
                     <button id="attachButton" class="text-gray-400 hover:text-white transition p-2 hover:scale-110 transform flex-shrink-0">
