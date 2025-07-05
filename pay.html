@@ -1,21 +1,21 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>สร้างลิงก์ TrueMoney</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>สร้างลิงก์รับเงิน</title>
 </head>
 <body>
-  <h2>💸 สร้างลิงก์รับเงิน TrueMoney</h2>
+  <h2>💸 สร้างลิงก์ TrueMoney</h2>
 
-  <label>📱 เบอร์ปลายทาง (10 หลัก):</label><br>
+  <label>📱 เบอร์ TrueMoney:</label><br>
   <input id="mobile" type="tel" placeholder="0812345678" maxlength="10"><br><br>
 
   <label>💰 จำนวนเงิน (บาท):</label><br>
   <input id="amount" type="number" placeholder="100.00" step="0.01"><br><br>
 
-  <label>📝 ข้อความ (ใส่หรือไม่ใส่ก็ได้):</label><br>
-  <input id="message" type="text" placeholder="เติมเงินกับร้าน A" maxlength="140"><br><br>
+  <label>📝 ข้อความ (เช่น: เติมเงิน):</label><br>
+  <input id="message" type="text" placeholder="เติมเกมกับร้าน A" maxlength="140"><br><br>
 
   <button onclick="pay()">สร้างลิงก์</button>
 
@@ -30,21 +30,19 @@
         return;
       }
 
-      const res = await fetch("https://603f07b5-f049-4891-ba60-3f72241e35b9-00-2h06yrj3tpq83.sisko.replit.dev/create-payment", { // 👈 เปลี่ยนตรงนี้
+      const res = await fetch("https://603f07b5-f049-4891-ba60-3f72241e35b9-00-2h06yrj3tpq83.sisko.replit.dev//create-payment", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ mobile_number, amount, message })
       });
 
       const data = await res.json();
-console.log("📦 ตอบกลับจาก API:", data); // ← เพิ่มบรรทัดนี้
-
-if (data.success && data.url) {
+      console.log(data);
 
       if (data.success && data.url) {
         window.location.href = data.url;
       } else {
-        alert("❌ ไม่สามารถสร้างลิงก์ได้:\n" + (data.error || "ไม่ทราบสาเหตุ"));
+        alert("❌ ไม่สามารถสร้างลิงก์ได้:\n" + (data.error || \"ไม่ทราบสาเหตุ\"));
       }
     }
   </script>
