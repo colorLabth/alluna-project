@@ -139,6 +139,41 @@ class="h-full">
         0%, 50% { opacity: 1; }
         51%, 100% { opacity: 0; }
     }
+
+    /* Mobile viewport fix */
+    .mobile-safe-area {
+        height: 100vh;
+        height: 100dvh;
+    }
+
+    /* Fixed input area for mobile */
+    .fixed-input-area {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 50;
+        background: #1a1a1a;
+        border-top: 1px solid #333333;
+        padding: 1rem;
+        padding-bottom: max(1.5rem, env(safe-area-inset-bottom));
+    }
+
+    /* Chat container with proper bottom padding */
+    .chat-with-fixed-input {
+        padding-bottom: 140px;
+    }
+
+    /* Handle keyboard on mobile */
+    @media (max-height: 600px) {
+        .fixed-input-area {
+            padding: 0.75rem;
+            padding-bottom: max(1rem, env(safe-area-inset-bottom));
+        }
+        .chat-with-fixed-input {
+            padding-bottom: 100px;
+        }
+    }
 </style>
 </head>
 <body class="h-full bg-spark-dark text-spark-text font-thai antialiased theme-transition" id="body">
@@ -193,7 +228,7 @@ class="h-full">
 
         <!-- Chat Container -->
         <div class="flex-1 flex flex-col min-h-0">
-            <div id="chatContainer" class="flex-1 overflow-y-auto flex flex-col space-y-4 px-6 pt-6 pb-6">
+            <div id="chatContainer" class="flex-1 overflow-y-auto flex flex-col space-y-4 px-6 pt-6 chat-with-fixed-input">
                 <!-- Welcome Message -->
                 <div class="flex justify-start message-slide-in">
                     <div class="max-w-xs md:max-w-md relative group">
@@ -217,39 +252,6 @@ class="h-full">
                             </button>
                         </div>
                     </div>
-                </div>
-            </div>
-
-            <!-- Input Area -->
-            <div class="p-4 pb-6 border-t border-spark-border bg-spark-gray">
-                <!-- Attached Files Container -->
-                <div id="attachedFilesContainer" class="hidden flex flex-wrap gap-2 mb-3"></div>
-                
-                <div class="flex items-center space-x-3">
-                    <button id="attachButton" class="text-gray-400 hover:text-white transition p-2 hover:scale-110 transform flex-shrink-0">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/>
-                        </svg>
-                    </button>
-
-                    <div class="flex-1 relative">
-                        <textarea 
-                            id="messageInput"
-                            placeholder="พิมพ์ข้อความ..."
-                            class="w-full bg-spark-dark border border-spark-border rounded-2xl px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-white transition resize-none min-h-[48px] overflow-hidden"
-                            rows="1"
-                        ></textarea>
-                    </div>
-                    
-                    <button 
-                        id="sendButton" 
-                        class="bg-gray-600 text-gray-400 opacity-50 p-3 rounded-full transition hover:scale-110 transform active:scale-95 flex-shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
-                        disabled
-                    >
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
-                        </svg>
-                    </button>
                 </div>
             </div>
         </div>
@@ -300,6 +302,39 @@ class="h-full">
 
         <div id="chatDetailContent" class="flex-1 overflow-y-auto px-6 py-6 space-y-4"></div>
     </div>
+
+    <!-- Fixed Input Area -->
+    <div class="fixed-input-area">
+        <!-- Attached Files Container -->
+        <div id="attachedFilesContainer" class="hidden flex flex-wrap gap-2 mb-3"></div>
+        
+        <div class="flex items-center space-x-3">
+            <button id="attachButton" class="text-gray-400 hover:text-white transition p-2 hover:scale-110 transform flex-shrink-0">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/>
+                </svg>
+            </button>
+            
+            <div class="flex-1 relative">
+                <textarea 
+                    id="messageInput"
+                    placeholder="พิมพ์ข้อความ..."
+                    class="w-full bg-spark-dark border border-spark-border rounded-2xl px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-white transition resize-none min-h-[48px] overflow-hidden"
+                    rows="1"
+                ></textarea>
+            </div>
+            
+            <button 
+                id="sendButton" 
+                class="bg-gray-600 text-gray-400 opacity-50 p-3 rounded-full transition hover:scale-110 transform active:scale-95 flex-shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled
+            >
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+                </svg>
+            </button>
+        </div>
+    </div>
 </div>
 
 <!-- Copy Popup -->
@@ -321,6 +356,7 @@ class="h-full">
             this.initializeEventListeners();
             this.autoResizeTextarea();
             this.updateSendButtonState();
+            this.handleMobileViewport();
         }
 
         initializeElements() {
@@ -365,6 +401,23 @@ class="h-full">
             this.fileInput.addEventListener('change', (e) => this.handleFileSelect(e));
         }
 
+        handleMobileViewport() {
+            // Handle mobile keyboard appearance
+            const handleResize = () => {
+                const vh = window.innerHeight * 0.01;
+                document.documentElement.style.setProperty('--vh', `${vh}px`);
+            };
+
+            window.addEventListener('resize', handleResize);
+            window.addEventListener('orientationchange', handleResize);
+            handleResize();
+
+            // Handle iOS Safari bottom bar
+            if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
+                document.body.style.paddingBottom = 'env(safe-area-inset-bottom)';
+            }
+        }
+
         updateSendButtonState() {
             const hasText = this.messageInput.value.trim().length > 0;
             const hasFiles = this.attachedFiles.length > 0;
@@ -382,7 +435,6 @@ class="h-full">
         }
 
         initializeEventListeners() {
-            // Send message events
             this.sendButton.addEventListener('click', () => this.sendMessage());
             this.messageInput.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter' && !e.shiftKey) {
@@ -395,7 +447,6 @@ class="h-full">
                 this.updateSendButtonState();
             });
 
-            // Menu events
             this.menuButton.addEventListener('click', (e) => {
                 e.stopPropagation();
                 this.toggleMenu();
@@ -408,15 +459,12 @@ class="h-full">
             this.resetChat.addEventListener('click', () => this.resetChatHistory());
             this.chatHistory.addEventListener('click', () => this.showHistoryPage());
 
-            // Navigation events
             this.backToChat.addEventListener('click', () => this.showChatPage());
             this.backToHistory.addEventListener('click', () => this.showHistoryPage());
             this.clearAllHistory.addEventListener('click', () => this.clearAllChatHistory());
 
-            // File attachment
             this.attachButton.addEventListener('click', () => this.handleAttachment());
 
-            // Copy and feedback events
             document.addEventListener('click', (e) => {
                 if (e.target.closest('.ai-copy-btn')) {
                     const button = e.target.closest('.ai-copy-btn');
@@ -431,7 +479,6 @@ class="h-full">
             });
         }
 
-        // Page Navigation
         showChatPage() {
             this.currentPage = 'chat';
             this.chatPage.className = 'flex flex-col h-full page-transition page-active';
@@ -457,7 +504,6 @@ class="h-full">
             this.populateChatDetail(chatId);
         }
 
-        // Menu Functions
         toggleMenu() {
             this.menuDropdown.classList.toggle('show');
         }
@@ -466,7 +512,6 @@ class="h-full">
             this.menuDropdown.classList.remove('show');
         }
 
-        // Auto-resize textarea
         autoResizeTextarea() {
             this.messageInput.addEventListener('input', () => {
                 this.messageInput.style.height = 'auto';
@@ -474,7 +519,6 @@ class="h-full">
             });
         }
 
-        // File handling
         handleAttachment() {
             this.fileInput.click();
         }
@@ -549,9 +593,8 @@ class="h-full">
             this.attachedFiles = [];
             this.attachedFilesContainer.classList.add('hidden');
             this.attachedFilesContainer.innerHTML = '';
-                }
+        }
 
-         // Message Functions
         async sendMessage() {
             const message = this.messageInput.value.trim();
             const hasFiles = this.attachedFiles.length > 0;
@@ -651,13 +694,11 @@ class="h-full">
         }
 
         async simulateAIResponse(userMessage, hasFiles) {
-            // Realistic delay
             await new Promise(resolve => setTimeout(resolve, 800 + Math.random() * 1200));
             
             this.hideTypingIndicator();
             let response = this.generateResponse(userMessage, hasFiles);
             
-            // Use smooth typing for longer responses
             if (response.length > 80) {
                 await this.addMessageWithSmoothTyping(response);
             } else {
@@ -715,17 +756,14 @@ class="h-full">
             const typingElement = messageDiv.querySelector('#typingText');
             let currentText = '';
             
-            // Smooth character-by-character typing
             for (let i = 0; i < content.length; i++) {
                 currentText += content[i];
                 typingElement.textContent = currentText;
                 
-                // Smooth scroll every few characters
                 if (i % 8 === 0) {
                     this.scrollToBottom();
                 }
                 
-                // Variable speed based on character
                 let delay = 25;
                 if (content[i] === ' ') delay = 40;
                 if (content[i] === '.' || content[i] === '!' || content[i] === '?') delay = 150;
@@ -744,7 +782,6 @@ class="h-full">
             });
         }
 
-        // History Functions
         loadChatHistory() {
             const saved = localStorage.getItem('sparkTopo_chatHistory');
             return saved ? JSON.parse(saved) : [];
@@ -849,7 +886,7 @@ class="h-full">
                 this.saveChatHistory();
                 this.populateHistoryList();
             }
-                    }
+        }
 
         resetChatHistory() {
             this.chatContainer.innerHTML = `
@@ -880,7 +917,6 @@ class="h-full">
             this.closeMenu();
         }
 
-        // Utility Functions
         handleFeedback(button) {
             const svg = button.querySelector('svg');
             const isLiked = button.classList.contains('liked');
@@ -915,7 +951,6 @@ class="h-full">
         }
     }
 
-    // Initialize the chat when DOM is loaded
     let chatInstance;
     document.addEventListener('DOMContentLoaded', () => {
         chatInstance = new SparkTopoChat();
