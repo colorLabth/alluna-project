@@ -136,7 +136,7 @@
         }
     </style>
 </head>
-ส่วนที่ 2: Body และ Main Container
+<!-- ส่วนที่ 2: Body และ Main Container -->
 <body class="bg-spark-dark text-spark-text font-thai antialiased theme-transition" id="body">
     <div class="flex flex-col h-screen max-w-4xl mx-auto bg-spark-gray shadow-2xl theme-transition overflow-hidden relative" id="mainContainer">
         
@@ -245,7 +245,7 @@
                 </div>
             </div>
         </div>
-ส่วนที่ 4: History Page
+<!-- ส่วนที่ 4: History Page -->
         <div id="historyPage" class="flex flex-col h-full page-transition slide-right">
             <header class="bg-spark-gray border-b border-spark-border px-6 py-4 flex items-center justify-between theme-transition">
                 <div class="flex items-center space-x-4">
@@ -373,7 +373,7 @@
                     this.sendButton.classList.remove('bg-white', 'text-black');
                 }
             }
-          ส่วนที่ 6: Event Listeners
+          // ส่วนที่ 6: Event Listeners
             initializeEventListeners() {
                 this.sendButton.addEventListener('click', () => this.sendMessage());
                 this.messageInput.addEventListener('keydown', (e) => {
@@ -418,7 +418,7 @@
                     }
                 });
             }
-ส่วนที่ 7: Page Navigation Methods
+          // ส่วนที่ 7: Page Navigation Methods
             showChatPage() {
                 this.currentPage = 'chat';
                 this.chatPage.className = 'flex flex-col h-full page-transition page-active';
@@ -443,7 +443,7 @@
                 this.chatDetailPage.className = 'flex flex-col h-full page-transition page-active';
                 this.populateChatDetail(chatId);
             }
-ส่วนที่ 8: History Management
+            // ส่วนที่ 8: History Management
             populateHistoryList() {
                 if (this.chatHistoryData.length === 0) {
                     this.historyList.innerHTML = `
@@ -524,7 +524,7 @@
                     this.populateHistoryList();
                 }
             }
-ส่วนที่ 9: Utility Methods
+           // ส่วนที่ 9: Utility Methods
             autoResizeTextarea() {
                 this.messageInput.addEventListener('input', () => {
                     this.messageInput.style.height = 'auto';
@@ -593,7 +593,7 @@
                 
                 this.saveChatHistory();
             }
-ส่วนที่ 10: File Handling
+           //  ส่วนที่ 10: File Handling
             handleAttachment() {
                 this.fileInput.click();
             }
@@ -669,7 +669,7 @@
                 this.attachedFilesContainer.classList.add('hidden');
                 this.attachedFilesContainer.innerHTML = '';
             }
-ส่วนที่ 11: Feedback และ Copy Functions
+           // ส่วนที่ 11: Feedback และ Copy Functions
             handleFeedback(button) {
                 const svg = button.querySelector('svg');
                 const isLiked = button.classList.contains('liked');
@@ -702,7 +702,7 @@
                     this.copyPopup.classList.remove('show');
                 }, 2000);
             }
-ส่วนที่ 12: Message Sending และ AI Response
+           // ส่วนที่ 12: Message Sending และ AI Response
             async sendMessage() {
                 const message = this.messageInput.value.trim();
                 const hasFiles = this.attachedFiles.length > 0;
@@ -823,7 +823,7 @@
                 }
                 return `ได้รับข้อความ "${message}" ของคุณแล้ว - พร้อมเชื่อมต่อ API`;
             }
-ส่วนที่ 13: Typing Animation และ Scroll
+            // ส่วนที่ 13: Typing Animation และ Scroll
             async addMessageWithTyping(content, sender) {
                 const messageDiv = document.createElement('div');
                 messageDiv.className = 'message-slide-in';
