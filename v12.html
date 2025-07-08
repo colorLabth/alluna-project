@@ -4,7 +4,7 @@ class="h-full">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SparkTopo AIchat</title>
+    <title>Spark</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -175,9 +175,7 @@ class="h-full">
         }
     }
 </style>
-<!-- ส่วนที่ 2: Body และ Main Container -->
-<body class="bg-spark-dark text-spark-text font-thai antialiased theme-transition" id="body">
-    <div class="flex flex-col h-screen max-w-4xl mx-auto bg-spark-gray shadow-2xl theme-transition overflow-hidden relative" id="mainContainer">
+<!-- Chat Page -->
     <div id="chatPage" class="flex flex-col h-full page-transition page-active">
         <!-- Header -->
         <header class="bg-spark-gray border-b border-spark-border px-6 py-4 flex items-center justify-between">
@@ -266,22 +264,9 @@ class="h-full">
                     </svg>
                 </button>
                 
-                <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-lg">
-                    <svg class="w-6 h-6 text-black" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M12 2L13.09 8.26L22 9L13.09 9.74L12 16L10.91 9.74L2 9L10.91 8.26L12 2Z"/>
-                        <path d="M19 15L20.09 18.26L24 19L20.09 19.74L19 23L17.91 19.74L14 19L17.91 18.26L19 15Z"/>
-                        <path d="M5 15L6.09 18.26L10 19L6.09 19.74L5 23L3.91 19.74L0 19L3.91 18.26L5 15Z"/>
-                    </svg>
-                </div>
-                
-                <div class="flex items-center space-x-3">
-                    <div>
-                        <h1 class="text-xl font-bold text-white">ประวัติการสนทนา</h1>
-                        <div class="flex items-center space-x-2 mt-1">
-                            <div class="w-2 h-2 bg-blue-500 rounded-full online-indicator"></div>
-                            <span class="text-xs text-blue-400">เลือกแชทที่ต้องการดู</span>
-                        </div>
-                    </div>
+                <div>
+                    <h1 class="text-xl font-bold text-white">ประวัติการสนทนา</h1>
+                    <p class="text-sm text-gray-400 mt-1">เลือกแชทที่ต้องการดู</p>
                 </div>
             </div>
             
@@ -305,22 +290,9 @@ class="h-full">
                     </svg>
                 </button>
                 
-                <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-lg">
-                    <svg class="w-6 h-6 text-black" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M12 2L13.09 8.26L22 9L13.09 9.74L12 16L10.91 9.74L2 9L10.91 8.26L12 2Z"/>
-                        <path d="M19 15L20.09 18.26L24 19L20.09 19.74L19 23L17.91 19.74L14 19L17.91 18.26L19 15Z"/>
-                        <path d="M5 15L6.09 18.26L10 19L6.09 19.74L5 23L3.91 19.74L0 19L3.91 18.26L5 15Z"/>
-                    </svg>
-                </div>
-                
-                <div class="flex items-center space-x-3">
-                    <div>
-                        <h1 class="text-xl font-bold text-white">รายละเอียดแชท</h1>
-                        <div class="flex items-center space-x-2 mt-1">
-                            <div class="w-2 h-2 bg-purple-500 rounded-full online-indicator"></div>
-                            <span id="chatDetailTime" class="text-xs text-purple-400"></span>
-                        </div>
-                    </div>
+                <div>
+                    <h1 class="text-xl font-bold text-white">รายละเอียดแชท</h1>
+                    <p id="chatDetailTime" class="text-sm text-gray-400 mt-1"></p>
                 </div>
             </div>
         </header>
@@ -372,7 +344,7 @@ class="h-full">
     </div>
 </div>
 
-<script>
+    <script>
     class SparkTopoChat {
         constructor() {
             this.initializeElements();
@@ -790,7 +762,7 @@ class="h-full">
                 }
                 
                 let delay = 25;
-                if (content[i] === ' ') delay = 40;
+                if (content[i] ===' ') delay = 40;
                 if (content[i] === '.' || content[i] === '!' || content[i] === '?') delay = 150;
                 if (content[i] === ',') delay = 80;
                 
@@ -981,6 +953,3 @@ class="h-full">
         chatInstance = new SparkTopoChat();
     });
 </script>
-</body>
-</head>
-</html>
