@@ -618,30 +618,62 @@
             }
 
             async sendMessage() {
-                const message = this.messageInput.value.trim();
-                const hasFiles = this.attachedFiles.length > 0;
-                
-                if (!message && !hasFiles) return;
-                if (this.isTyping) return;
+    const message = this.messageInput.value.trim();
+    const hasFiles = this.attachedFiles.length > 0;
+    if (!message && !hasFiles) return;
+    if (this.isTyping) return;
 
-                if (hasFiles) {
-                    for (const fileObj of this.attachedFiles) {
-                        await this.sendFileMessage(fileObj);
-                    }
-                }
+    // UI: แสดงข้อความ user
+    if (hasFiles) {
+        for (const fileObj of this.attachedFiles) {
+            this.addImageMessage(URL.createObjectURL(fileObj.file), fileObj.name);
+            this.addToCurrentSession(`[รูปภาพ: ${fileObj.name}]`, 'user');
+        }
+    }
+    if (message) {
+        this.addMessage(message, 'user');
+        this.addToCurrentSession(message, 'user');
+    }
 
-                if (message) {
-                    this.addMessage(message, 'user');
-                    this.addToCurrentSession(message, 'user');
-                }
+    this.messageInput.value = '';
+    this.messageInput.style.height = 'auto';
+    this.clearAttachedFiles();
+    this.updateSendButtonState();
 
-                this.messageInput.value = '';
-                this.messageInput.style.height = 'auto';
-                this.clearAttachedFiles();
-                this.updateSendButtonState();
+    this.showTypingIndicator();
 
-                this.showTypingIndicator();
-                await this.simulateAIResponse(message, hasFiles);
+    // --- ส่วนที่ต้อง "เพิ่ม" เพื่อเชื่อมกับ backend จริง ---
+    try {
+        let data, aiReply;
+        if (hasFiles) {
+            // ส่งแบบ multipart (ข้อความ+ไฟล์ หรือไฟล์อย่างเดียว)
+            const formData = new FormData();
+            if (message) formData.append('message', message);
+            formData.append('image', this.attachedFiles[0].file);
+
+            const response = await fetch('https://your-backend-url/chat', {
+                method: 'POST',
+                body: formData,
+            });
+            data = await response.json();
+        } else {
+            // ส่งข้อความอย่างเดียว
+            const response = await fetch('https://your-backend-url/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message }),
+            });
+            data = await response.json();
+        }
+        aiReply = data.reply || 'ขออภัย ไม่สามารถตอบได้ในขณะนี้';
+
+        this.hideTypingIndicator();
+        this.addMessage(aiReply, 'ai');
+        this.addToHistory(message, aiReply);
+    } catch (error) {
+        this.hideTypingIndicator();
+        this.addMessage('เกิดข้อผิดพลาดในการเชื่อมต่อ API', 'ai');
+    }
             }
 
             async sendFileMessage(fileObj) {
