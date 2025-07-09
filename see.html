@@ -651,14 +651,14 @@
             if (message) formData.append('message', message);
             formData.append('image', this.attachedFiles[0].file);
 
-            const response = await fetch('https://your-backend-url/chat', {
+            const response = await fetch('https://780c39ce-b2f1-4aa2-bf40-5bc80cc91a31-00-vftcg5pck484.sisko.replit.dev//chat', {
                 method: 'POST',
                 body: formData,
             });
             data = await response.json();
         } else {
             // ส่งข้อความอย่างเดียว
-            const response = await fetch('https://your-backend-url/chat', {
+            const response = await fetch('https://780c39ce-b2f1-4aa2-bf40-5bc80cc91a31-00-vftcg5pck484.sisko.replit.dev//chat', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ message }),
