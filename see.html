@@ -637,10 +637,10 @@
 
     this.messageInput.value = '';
     this.messageInput.style.height = 'auto';
-    this.clearAttachedFiles();
     this.updateSendButtonState();
-
     this.showTypingIndicator();
+
+     this.clearAttachedFiles();
 
     try {
         let data, aiReply;
