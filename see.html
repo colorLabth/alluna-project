@@ -638,9 +638,8 @@
     this.messageInput.value = '';
     this.messageInput.style.height = 'auto';
     this.updateSendButtonState();
-    this.showTypingIndicator();
 
-     this.clearAttachedFiles();
+    this.showTypingIndicator();
 
     try {
         let data, aiReply;
@@ -665,6 +664,8 @@
             });
             if (!response.ok) throw new Error('API failed');
             data = await response.json();
+
+            this.clearAttachedFiles();
         }
 
         aiReply = data.reply || 'ขออภัย ไม่สามารถตอบได้ในขณะนี้';
