@@ -1,0 +1,1156 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SparkTopo - AI Chat Interface</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'thai': ['Inter', 'Noto Sans Thai', 'sans-serif']
+                    },
+                    colors: {
+                        'spark-dark': '#0a0a0a',
+                        'spark-gray': '#1a1a1a',
+                        'spark-light': '#2a2a2a',
+                        'spark-border': '#333333',
+                        'spark-text': '#e5e7eb'
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        *::-webkit-scrollbar {
+            display: none;
+        }
+        
+        html {
+            scroll-behavior: smooth;
+            -webkit-text-size-adjust: 100%;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        
+        body {
+            overscroll-behavior: none;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .typing-dots {
+            animation: typing 1.4s infinite ease-in-out;
+        }
+        .typing-dots:nth-child(1) { animation-delay: 0s; }
+        .typing-dots:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dots:nth-child(3) { animation-delay: 0.4s; }
+        
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+            30% { transform: translateY(-10px); opacity: 1; }
+        }
+        
+        .message-slide-in {
+            animation: slideInUp 0.3s ease-out;
+        }
+        
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .hover-lift {
+            transition: all 0.2s ease;
+        }
+        .hover-lift:hover {
+            transform: translateY(-1px);
+        }
+        
+        .menu-dropdown {
+            transform: translateY(-10px);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.2s ease;
+        }
+        
+        .menu-dropdown.show {
+            transform: translateY(0);
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .copy-popup {
+            transform: translateY(10px);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.2s ease;
+        }
+        
+        .copy-popup.show {
+            transform: translateY(0);
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .page-transition {
+            transition: transform 0.3s ease-in-out;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .slide-left {
+            transform: translateX(-100%);
+        }
+
+        .slide-right {
+            transform: translateX(100%);
+        }
+
+        .page-active {
+            transform: translateX(0);
+        }
+
+        .online-indicator {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .typing-cursor {
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        .mobile-safe-area {
+            height: 100vh;
+            height: 100dvh;
+            min-height: -webkit-fill-available;
+            min-height: fill-available;
+        }
+        
+        @supports (-webkit-touch-callout: none) {
+            .mobile-safe-area {
+                height: -webkit-fill-available;
+            }
+        }
+
+        .fixed-input-area {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 50;
+            background: #1a1a1a;
+            border-top: 1px solid #333333;
+            padding: 1rem;
+            padding-bottom: max(1.5rem, env(safe-area-inset-bottom));
+        }
+
+        .chat-with-fixed-input {
+            padding-bottom: 140px;
+        }
+
+        @media (max-height: 600px) {
+            .fixed-input-area {
+                padding: 0.75rem;
+                padding-bottom: max(1rem, env(safe-area-inset-bottom));
+            }
+            .chat-with-fixed-input {
+                padding-bottom: 100px;
+            }
+        }
+    </style>
+</head>
+<body class="bg-spark-dark text-spark-text font-thai antialiased">
+    <div class="flex flex-col mobile-safe-area w-full bg-spark-gray overflow-hidden relative">
+        
+        <div id="chatPage" class="flex flex-col h-full page-transition page-active">
+            <header class="bg-black px-6 py-4 flex items-center justify-between shadow-lg border-b border-gray-800">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-md">
+                        <svg class="w-6 h-6 text-black" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 2L13.09 8.26L22 9L13.09 9.74L12 16L10.91 9.74L2 9L10.91 8.26L12 2Z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold text-white tracking-wide">SparkTopo AI</h1>
+                        <div class="flex items-center space-x-2">
+                            <div class="w-2 h-2 bg-green-400 rounded-full online-indicator"></div>
+                            <span class="text-xs text-green-300">กำลังแชท</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="relative">
+                    <button id="menuButton" class="p-2 hover:bg-gray-800 rounded-xl transition-all hover-lift text-white">
+                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"/>
+                        </svg>
+                    </button>
+                    
+                    <div id="menuDropdown" class="menu-dropdown absolute right-0 top-12 bg-white border border-gray-200 rounded-xl shadow-xl w-48 py-2 z-50">
+                        <button id="resetChat" class="reset-btn w-full px-4 py-2 text-left hover:bg-gray-100 transition-colors flex items-center space-x-3 text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                            </svg>
+                            <span>รีเซ็ตแชท</span>
+                        </button>
+                        <button id="chatHistory" class="w-full px-4 py-2 text-left hover:bg-gray-100 transition-colors flex items-center space-x-3 text-gray-700">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            <span>ประวัติแชท</span>
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <div class="flex-1 flex flex-col min-h-0">
+                <div id="chatContainer" class="flex-1 overflow-y-auto flex flex-col space-y-4 px-6 pt-6 chat-with-fixed-input">
+                    <div class="flex justify-start message-slide-in">
+                        <div class="max-w-xs md:max-w-md relative group">
+                            <div class="bg-gray-800 rounded-3xl rounded-tl-lg px-5 py-4 shadow-lg border border-gray-700">
+                                <p class="text-white leading-relaxed">
+                                    ยินดีต้อนรับสู่ SparkTopo! 🚀<br>
+                                    ผมคือ AI Assistant ที่พร้อมช่วยเหลือคุณในทุกเรื่อง<br>
+                                    เริ่มต้นการสนทนาได้เลยครับ
+                                </p>
+                            </div>
+                            <div class="flex items-center space-x-2 mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <button class="ai-copy-btn p-1 hover:bg-gray-700 rounded transition-colors" data-message="ยินดีต้อนรับสู่ SparkTopo! ผมคือ AI Assistant ที่พร้อมช่วยเหลือคุณในทุกเรื่อง เริ่มต้นการสนทนาได้เลยครับ">
+                                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                                    </svg>
+                                </button>
+                                <button class="ai-feedback-btn p-1 hover:bg-gray-700 rounded transition-colors">
+                                    <svg class="w-4 h-4 text-gray-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="historyPage" class="flex flex-col h-full page-transition slide-right">
+            <header class="bg-gray-900 px-6 py-4 flex items-center justify-between shadow-lg border-b border-gray-700">
+                <div class="flex items-center space-x-3">
+                    <button id="backToChat" class="p-2 hover:bg-gray-700 rounded-xl transition-all hover-lift text-white">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+                        </svg>
+                    </button>
+                    <div>
+                        <h1 class="text-xl font-bold text-white tracking-wide">ประวัติการสนทนา</h1>
+                        <p class="text-xs text-gray-400">เลือกแชทที่ต้องการดู</p>
+                    </div>
+                </div>
+                
+                <button id="clearAllHistory" class="text-red-400 hover:text-white hover:bg-red-500 transition p-2 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-red-400">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                    </svg>
+                </button>
+            </header>
+
+            <div id="historyList" class="flex-1 overflow-y-auto px-6 py-6"></div>
+        </div>
+
+        <div id="chatDetailPage" class="flex flex-col h-full page-transition slide-right">
+            <header class="bg-gray-800 px-6 py-4 flex items-center justify-between shadow-lg border-b border-gray-600">
+                <div class="flex items-center space-x-3">
+                    <button id="backToHistory" class="p-2 hover:bg-gray-600 rounded-xl transition-all hover-lift text-white">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+                        </svg>
+                    </button>
+                    <div>
+                        <h1 class="text-xl font-bold text-white tracking-wide">รายละเอียดแชท</h1>
+                        <span id="chatDetailTime" class="text-xs text-gray-400"></span>
+                    </div>
+                </div>
+            </header>
+
+            <div id="chatDetailContent" class="flex-1 overflow-y-auto px-6 py-6 space-y-4"></div>
+        </div>
+
+        <div id="inputArea" class="fixed-input-area">
+            <div id="attachedFilesContainer" class="hidden flex flex-wrap gap-2 mb-3"></div>
+            
+            <div class="flex items-center space-x-3">
+                <button id="attachButton" class="text-gray-400 hover:text-white transition p-3 hover:scale-110 transform flex-shrink-0 hover:bg-gray-700 rounded-xl">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                    </svg>
+                </button>
+                
+                <div class="flex-1 relative">
+                    <textarea 
+                        id="messageInput"
+                        placeholder="พิมพ์ข้อความ..."
+                        class="w-full bg-black border-2 border-gray-700 rounded-2xl px-5 py-4 text-white placeholder-gray-500 focus:outline-none focus:border-gray-500 transition resize-none min-h-[56px] overflow-hidden font-medium"
+                        rows="1"
+                    ></textarea>
+                </div>
+                
+                <button 
+                    id="sendButton" 
+                    class="bg-gray-700 text-gray-500 opacity-50 p-4 rounded-full transition hover:scale-110 transform active:scale-95 flex-shrink-0 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
+                    disabled
+                >
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="copyPopup" class="copy-popup fixed top-20 left-1/2 transform -translate-x-1/2 bg-gray-800 border border-gray-600 rounded-xl px-4 py-2 shadow-xl z-50">
+        <div class="flex items-center space-x-2">
+            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+            </svg>
+            <span class="text-white text-sm font-medium">คัดลอกแล้ว</span>
+        </div>
+    </div>
+
+    <script>
+        class SparkTopoChat {
+            constructor() {
+                this.initializeElements();
+                this.initializeState();
+                this.createFileInput();
+                this.initializeEventListeners();
+                this.autoResizeTextarea();
+                this.updateSendButtonState();
+                this.handleMobileViewport();
+                this.loadCurrentSessionToChat();
+            }
+
+            initializeElements() {
+                this.chatContainer = document.getElementById('chatContainer');
+                this.messageInput = document.getElementById('messageInput');
+                this.sendButton = document.getElementById('sendButton');
+                this.attachButton = document.getElementById('attachButton');
+                this.menuButton = document.getElementById('menuButton');
+                this.menuDropdown = document.getElementById('menuDropdown');
+                this.resetChat = document.getElementById('resetChat');
+                this.chatHistory = document.getElementById('chatHistory');
+                this.copyPopup = document.getElementById('copyPopup');
+                
+                this.chatPage = document.getElementById('chatPage');
+                this.historyPage = document.getElementById('historyPage');
+                this.chatDetailPage = document.getElementById('chatDetailPage');
+                this.historyList = document.getElementById('historyList');
+                this.chatDetailContent = document.getElementById('chatDetailContent');
+                this.chatDetailTime = document.getElementById('chatDetailTime');
+                
+                this.backToChat = document.getElementById('backToChat');
+                this.backToHistory = document.getElementById('backToHistory');
+                this.clearAllHistory = document.getElementById('clearAllHistory');
+                this.attachedFilesContainer = document.getElementById('attachedFilesContainer');
+            }
+
+            initializeState() {
+                this.isTyping = false;
+                this.chatHistoryData = this.loadChatHistory();
+                this.currentPage = 'chat';
+                this.attachedFiles = [];
+                this.currentChatSession = this.loadCurrentSession();
+                this.sessionId = Date.now();
+            }
+
+            createFileInput() {
+                this.fileInput = document.createElement('input');
+                this.fileInput.type = 'file';
+                this.fileInput.multiple = false;
+                this.fileInput.accept = 'image/*';
+                this.fileInput.style.display = 'none';
+                document.body.appendChild(this.fileInput);
+                
+                this.fileInput.addEventListener('change', (e) => this.handleFileSelect(e));
+            }
+
+            handleMobileViewport() {
+                const handleResize = () => {
+                    const vh = window.innerHeight * 0.01;
+                    document.documentElement.style.setProperty('--vh', `${vh}px`);
+                };
+
+                window.addEventListener('resize', handleResize);
+                window.addEventListener('orientationchange', handleResize);
+                handleResize();
+
+                if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
+                    document.body.style.paddingBottom = 'env(safe-area-inset-bottom)';
+                }
+            }
+
+            updateSendButtonState() {
+                const hasText = this.messageInput.value.trim().length > 0;
+                const hasFiles = this.attachedFiles.length > 0;
+                const canSend = (hasText || hasFiles) && !this.isTyping;
+                
+                this.sendButton.disabled = !canSend;
+                
+                if (canSend) {
+                    this.sendButton.classList.remove('opacity-50', 'bg-gray-700', 'text-gray-500');
+                    this.sendButton.classList.add('bg-white', 'text-black', 'shadow-lg');
+                } else {
+                    this.sendButton.classList.add('opacity-50', 'bg-gray-700', 'text-gray-500');
+                    this.sendButton.classList.remove('bg-white', 'text-black', 'shadow-lg');
+            }
+            
+            this.updateResetButtonState();
+            this.updateClearHistoryButtonState();
+        }
+
+        updateClearHistoryButtonState() {
+            const clearBtn = document.getElementById('clearAllHistory');
+            if (clearBtn) {
+                if (this.chatHistoryData.length > 0) {
+                    clearBtn.disabled = false;
+                    clearBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                } else {
+                    clearBtn.disabled = true;
+                    clearBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                }
+            }
+        }
+
+        updateResetButtonState() {
+            const resetBtn = document.getElementById('resetChat');
+            const hasMessages = this.currentChatSession.length > 0;
+            
+            if (hasMessages) {
+                resetBtn.disabled = false;
+                resetBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            } else {
+                resetBtn.disabled = true;
+                resetBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            }
+        }
+
+        initializeEventListeners() {
+            this.sendButton.addEventListener('click', () => this.sendMessage());
+            this.messageInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    this.sendMessage();
+                }
+            });
+
+            this.messageInput.addEventListener('input', () => {
+                this.updateSendButtonState();
+            });
+
+            this.menuButton.addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.toggleMenu();
+            });
+
+            document.addEventListener('click', () => {
+                this.closeMenu();
+            });
+
+            this.resetChat.addEventListener('click', () => this.resetChatHistory());
+            this.chatHistory.addEventListener('click', () => this.showHistoryPage());
+
+            this.backToChat.addEventListener('click', () => this.showChatPage());
+            this.backToHistory.addEventListener('click', () => this.showHistoryPage());
+            this.clearAllHistory.addEventListener('click', () => this.clearAllChatHistory());
+
+            this.attachButton.addEventListener('click', () => this.handleAttachment());
+
+            document.addEventListener('click', (e) => {
+                if (e.target.closest('.ai-copy-btn')) {
+                    const button = e.target.closest('.ai-copy-btn');
+                    const message = button.dataset.message;
+                    this.copyToClipboard(message);
+                }
+                
+                if (e.target.closest('.ai-feedback-btn')) {
+                    const button = e.target.closest('.ai-feedback-btn');
+                    this.handleFeedback(button);
+                }
+            });
+        }
+
+        showChatPage() {
+            this.currentPage = 'chat';
+            this.chatPage.className = 'flex flex-col h-full page-transition page-active';
+            this.historyPage.className = 'flex flex-col h-full page-transition slide-right';
+            this.chatDetailPage.className = 'flex flex-col h-full page-transition slide-right';
+            document.getElementById('inputArea').style.display = 'block';
+            this.closeMenu();
+        }
+
+        showHistoryPage() {
+            this.currentPage = 'history';
+            this.chatPage.className = 'flex flex-col h-full page-transition slide-left';
+            this.historyPage.className = 'flex flex-col h-full page-transition page-active';
+            this.chatDetailPage.className = 'flex flex-col h-full page-transition slide-right';
+            document.getElementById('inputArea').style.display = 'none';
+            this.populateHistoryList();
+            this.updateClearHistoryButtonState();
+            this.closeMenu();
+        }
+
+        showChatDetailPage(chatId) {
+            this.currentPage = 'chatDetail';
+            this.chatPage.className = 'flex flex-col h-full page-transition slide-left';
+            this.historyPage.className = 'flex flex-col h-full page-transition slide-left';
+            this.chatDetailPage.className = 'flex flex-col h-full page-transition page-active';
+            document.getElementById('inputArea').style.display = 'none';
+            this.populateChatDetail(chatId);
+        }
+
+        toggleMenu() {
+            this.menuDropdown.classList.toggle('show');
+        }
+
+        closeMenu() {
+            this.menuDropdown.classList.remove('show');
+        }
+
+        autoResizeTextarea() {
+            this.messageInput.addEventListener('input', () => {
+                this.messageInput.style.height = 'auto';
+                this.messageInput.style.height = Math.min(this.messageInput.scrollHeight, 128) + 'px';
+            });
+        }
+
+        handleAttachment() {
+            this.fileInput.click();
+        }
+
+        handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            if (file.size > 10 * 1024 * 1024) {
+                alert(`ไฟล์ ${file.name} มีขนาดใหญ่เกินไป (สูงสุด 10MB)`);
+                return;
+            }
+            
+            this.clearAttachedFiles();
+            
+            const fileObj = {
+                id: Date.now() + Math.random(),
+                file: file,
+                name: file.name,
+                type: file.type,
+                size: file.size,
+                url: URL.createObjectURL(file)
+            };
+            
+            this.attachedFiles.push(fileObj);
+            this.updateAttachedFilesDisplay();
+        }
+
+        updateAttachedFilesDisplay() {
+            if (this.attachedFiles.length === 0) {
+                this.attachedFilesContainer.classList.add('hidden');
+                this.attachedFilesContainer.innerHTML = '';
+                this.updateSendButtonState();
+                return;
+            }
+            
+            this.attachedFilesContainer.classList.remove('hidden');
+            this.attachedFilesContainer.innerHTML = this.attachedFiles.map(fileObj => {
+                const isImage = fileObj.type.startsWith('image/');
+                const fileSize = (fileObj.size / 1024).toFixed(1) + ' KB';
+                
+                return `
+                    <div class="bg-gray-800 border border-gray-600 rounded-lg p-2 flex items-center space-x-3 max-w-xs">
+                        ${isImage ? `
+                            <div class="relative flex-shrink-0">
+                                <img src="${fileObj.url}" alt="${fileObj.name}" class="w-12 h-12 object-cover rounded-lg">
+                            </div>
+                        ` : `
+                            <div class="flex-shrink-0">
+                                <svg class="w-12 h-12 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"/>
+                                </svg>
+                            </div>
+                        `}
+                        <div class="flex-1 min-w-0">
+                            <p class="text-white text-sm font-medium truncate">${fileObj.name}</p>
+                            <p class="text-gray-400 text-xs">${fileSize}</p>
+                        </div>
+                        <button class="flex-shrink-0 text-red-400 hover:text-red-300 transition p-1" onclick="chatInstance.removeAttachedFile('${fileObj.id}')">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
+                        </button>
+                    </div>
+                `;
+            }).join('');
+            this.updateSendButtonState();
+        }
+
+        removeAttachedFile(fileId) {
+            const fileToRemove = this.attachedFiles.find(f => f.id == fileId);
+            if (fileToRemove && fileToRemove.url) {
+                URL.revokeObjectURL(fileToRemove.url);
+            }
+            
+            this.attachedFiles = this.attachedFiles.filter(f => f.id != fileId);
+            this.updateAttachedFilesDisplay();
+        }
+
+        clearAttachedFiles() {
+            this.attachedFiles.forEach(file => {
+                if (file.url) {
+                    URL.revokeObjectURL(file.url);
+                }
+            });
+            
+            this.attachedFiles = [];
+            this.attachedFilesContainer.classList.add('hidden');
+            this.attachedFilesContainer.innerHTML = '';
+            this.updateSendButtonState();
+        }
+
+        async sendMessage() {
+            const message = this.messageInput.value.trim();
+            const hasFiles = this.attachedFiles.length > 0;
+            
+            if (!message && !hasFiles) return;
+            if (this.isTyping) return;
+
+            // ส่งรูปภาพก่อน (ถ้ามี)
+            if (hasFiles) {
+                for (const fileObj of this.attachedFiles) {
+                    await this.sendFileMessage(fileObj);
+                }
+            }
+
+            // ส่งข้อความ (ถ้ามี)
+            if (message) {
+                this.addMessage(message, 'user');
+                this.addToCurrentSession(message, 'user');
+            }
+
+            // เคลียร์ input และไฟล์หลังส่งเสร็จ
+            this.messageInput.value = '';
+            this.messageInput.style.height = 'auto';
+            this.clearAttachedFiles();
+            this.updateSendButtonState();
+
+            // แสดง AI response
+            this.showTypingIndicator();
+            await this.simulateAIResponse(message, hasFiles);
+        }
+
+        async sendFileMessage(fileObj) {
+            const isImage = fileObj.type.startsWith('image/');
+            
+            if (isImage) {
+                // ใช้ URL ที่สร้างไว้แล้วแทนการสร้างใหม่
+                this.addImageMessage(fileObj.url, fileObj.name);
+                this.addToCurrentSession(`[รูปภาพ: ${fileObj.name}]`, 'user');
+            }
+            
+            await new Promise(resolve => setTimeout(resolve, 100));
+        }
+
+        addImageMessage(imageUrl, fileName) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message-slide-in';
+            messageDiv.innerHTML = `
+                <div class="flex justify-end">
+                    <div class="max-w-xs md:max-w-md">
+                        <div class="bg-white rounded-2xl p-3 shadow-lg">
+                            <img src="${imageUrl}" alt="${fileName}" class="w-full h-auto rounded-xl max-h-80 object-cover">
+                            <p class="text-xs text-gray-600 mt-2 px-1">${fileName}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            this.chatContainer.appendChild(messageDiv);
+            this.scrollToBottom();
+        }
+
+        addMessage(content, sender) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message-slide-in';
+
+            if (sender === 'user') {
+                messageDiv.innerHTML = `
+                    <div class="flex justify-end">
+                        <div class="max-w-xs md:max-w-md">
+                            <div class="bg-white text-black rounded-2xl px-5 py-4 shadow-lg">
+                                <p class="leading-relaxed break-words overflow-wrap-anywhere">${content}</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                messageDiv.innerHTML = `
+                    <div class="flex justify-start">
+                        <div class="max-w-xs md:max-w-md relative group">
+                            <div class="bg-gray-800 rounded-3xl rounded-tl-lg px-5 py-4 shadow-lg border border-gray-700">
+                                <p class="text-white leading-relaxed break-words overflow-wrap-anywhere">${content}</p>
+                            </div>
+                            <div class="flex items-center space-x-2 mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <button class="ai-copy-btn p-1 hover:bg-gray-700 rounded transition-colors" data-message="${content.replace(/"/g, '&quot;')}">
+                                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                                    </svg>
+                                </button>
+                                <button class="ai-feedback-btn p-1 hover:bg-gray-700 rounded transition-colors">
+                                    <svg class="w-4 h-4 text-gray-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            this.chatContainer.appendChild(messageDiv);
+            this.scrollToBottom();
+        }
+
+        showTypingIndicator() {
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'message-slide-in';
+            typingDiv.id = 'currentTyping';
+            typingDiv.innerHTML = `
+                <div class="flex justify-start">
+                    <div class="max-w-xs md:max-w-md">
+                        <div class="bg-gray-800 rounded-3xl rounded-tl-lg px-5 py-4 shadow-lg border border-gray-700">
+                            <div class="flex space-x-1">
+                                <div class="w-2 h-2 bg-gray-400 rounded-full typing-dots"></div>
+                                <div class="w-2 h-2 bg-gray-400 rounded-full typing-dots"></div>
+                                <div class="w-2 h-2 bg-gray-400 rounded-full typing-dots"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            this.chatContainer.appendChild(typingDiv);
+            this.isTyping = true;
+            this.updateSendButtonState();
+            this.scrollToBottom();
+        }
+
+        hideTypingIndicator() {
+            const typingElement = document.getElementById('currentTyping');
+            if (typingElement) {
+                typingElement.remove();
+            }
+            this.isTyping = false;
+            this.updateSendButtonState();
+        }
+
+        async simulateAIResponse(userMessage, hasFiles) {
+            await new Promise(resolve => setTimeout(resolve, 800 + Math.random() * 1200));
+            
+            this.hideTypingIndicator();
+            let response = this.generateResponse(userMessage, hasFiles);
+            
+            if (response.length > 80) {
+                await this.addMessageWithSmoothTyping(response);
+            } else {
+                this.addMessage(response, 'ai');
+            }
+            
+            this.addToHistory(userMessage, response);
+        }
+
+        generateResponse(message, hasFiles) {
+            if (hasFiles && message) {
+                return `ได้รับรูปภาพและข้อความ "${message}" ของคุณแล้ว! ขณะนี้ระบบกำลังประมวลผลรูปภาพที่แนบมา ฟีเจอร์การวิเคราะห์รูปภาพจะพร้อมใช้งานเร็วๆ นี้ครับ 📸✨`;
+            } else if (hasFiles) {
+                return `ได้รับรูปภาพของคุณแล้ว! ขณะนี้ระบบกำลังประมวลผลรูปภาพ ฟีเจอร์การวิเคราะห์รูปภาพจะพร้อมใช้งานเร็วๆ นี้ครับ 📸`;
+            }
+            
+            const responses = [
+                `ได้รับข้อความ "${message}" ของคุณแล้ว - พร้อมเชื่อมต่อ API เพื่อประมวลผล`,
+                `เข้าใจแล้วครับ! "${message}" - ระบบกำลังวิเคราะห์และเตรียมคำตอบ`,
+                `ขอบคุณสำหรับข้อความ "${message}" - AI กำลังประมวลผลข้อมูล`,
+                `รับทราบครับ "${message}" - กำลังเตรียมคำตอบที่เหมาะสม`,
+                `ข้อความ "${message}" ได้รับแล้ว - API พร้อมให้บริการ`
+            ];
+            
+            return responses[Math.floor(Math.random() * responses.length)];
+        }
+
+        async addMessageWithSmoothTyping(content) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message-slide-in';
+            
+            messageDiv.innerHTML = `
+                <div class="flex justify-start">
+                    <div class="max-w-xs md:max-w-md relative group">
+                        <div class="bg-gray-800 rounded-3xl rounded-tl-lg px-5 py-4 shadow-lg border border-gray-700">
+                            <p class="text-white leading-relaxed break-words overflow-wrap-anywhere" id="typingText"></p>
+                        </div>
+                        <div class="flex items-center space-x-2 mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <button class="ai-copy-btn p-1 hover:bg-gray-700 rounded transition-colors" data-message="${content.replace(/"/g, '&quot;')}">
+                                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                                </svg>
+                            </button>
+                            <button class="ai-feedback-btn p-1 hover:bg-gray-700 rounded transition-colors">
+                                <svg class="w-4 h-4 text-gray-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            this.chatContainer.appendChild(messageDiv);
+            this.scrollToBottom();
+            
+            const typingElement = messageDiv.querySelector('#typingText');
+            let currentText = '';
+            
+            for (let i = 0; i < content.length; i++) {
+                currentText += content[i];
+                typingElement.textContent = currentText;
+                
+                if (i % 8 === 0) {
+                    this.scrollToBottom();
+                }
+                
+                let delay = 25;
+                if (content[i] === ' ') delay = 40;
+                if (content[i] === '.' || content[i] === '!' || content[i] === '?') delay = 150;
+                if (content[i] === ',') delay = 80;
+                
+                await new Promise(resolve => setTimeout(resolve, delay));
+            }
+            
+            this.scrollToBottom();
+        }
+
+        scrollToBottom() {
+            this.chatContainer.scrollTo({
+                top: this.chatContainer.scrollHeight,
+                behavior: 'smooth'
+            });
+        }
+
+        loadChatHistory() {
+            const saved = localStorage.getItem('sparkTopo_chatHistory');
+            return saved ? JSON.parse(saved) : [];
+        }
+
+        saveChatHistory() {
+            localStorage.setItem('sparkTopo_chatHistory', JSON.stringify(this.chatHistoryData));
+        }
+
+        loadCurrentSession() {
+            const saved = localStorage.getItem('sparkTopo_currentSession');
+            return saved ? JSON.parse(saved) : [];
+        }
+
+        saveCurrentSession() {
+            localStorage.setItem('sparkTopo_currentSession', JSON.stringify(this.currentChatSession));
+        }
+
+        loadCurrentSessionToChat() {
+            if (this.currentChatSession.length === 0) return;
+            
+            this.chatContainer.innerHTML = '';
+            
+            this.currentChatSession.forEach(msg => {
+                if (msg.message.startsWith('[รูปภาพ:')) {
+                    this.addMessage(msg.message, msg.sender);
+                } else {
+                    this.addMessage(msg.message, msg.sender);
+                }
+            });
+            
+            this.scrollToBottom();
+        }
+
+        addToCurrentSession(message, sender) {
+            this.currentChatSession.push({
+                message: message,
+                sender: sender,
+                timestamp: new Date().toISOString()
+            });
+            this.saveCurrentSession();
+            this.updateResetButtonState();
+        }
+
+        saveSessionToHistory() {
+            if (this.currentChatSession.length === 0) return;
+            
+            const timestamp = new Date().toLocaleString('th-TH');
+            const firstUserMessage = this.currentChatSession.find(msg => msg.sender === 'user')?.message || 'แชทใหม่';
+            
+            this.chatHistoryData.unshift({
+                id: this.sessionId,
+                timestamp: timestamp,
+                title: firstUserMessage.substring(0, 50) + (firstUserMessage.length > 50 ? '...' : ''),
+                messages: [...this.currentChatSession]
+            });
+            
+            if (this.chatHistoryData.length > 50) {
+                this.chatHistoryData = this.chatHistoryData.slice(0, 50);
+            }
+            
+            this.saveChatHistory();
+        }
+
+        addToHistory(userMessage, aiResponse) {
+            this.addToCurrentSession(aiResponse, 'ai');
+        }
+
+        populateHistoryList() {
+            if (this.chatHistoryData.length === 0) {
+                this.historyList.innerHTML = `
+                    <div class="text-center py-12">
+                        <svg class="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                        </svg>
+                        <p class="text-gray-400 text-lg">ยังไม่มีประวัติการสนทนา</p>
+                        <p class="text-gray-500 text-sm mt-2">เริ่มแชทเพื่อสร้างประวัติการสนทนา</p>
+                    </div>
+                `;
+                return;
+            }
+
+            this.historyList.innerHTML = this.chatHistoryData.map(session => `
+                <div class="history-item bg-gray-800 hover:bg-gray-700 rounded-xl p-4 mb-3 cursor-pointer transition-all hover-lift border border-gray-700" data-chat-id="${session.id}">
+                    <div class="flex items-start justify-between">
+                        <div class="flex-1">
+                            <div class="flex items-center space-x-2 mb-2">
+                                <div class="w-2 h-2 bg-blue-500 rounded-full"></div>
+                                <span class="text-sm text-gray-400">${session.timestamp}</span>
+                            </div>
+                            <p class="text-white font-medium mb-1 line-clamp-1">${session.title}</p>
+                            <p class="text-gray-400 text-sm line-clamp-2">${session.messages?.length || 0} ข้อความ</p>
+                        </div>
+                        <svg class="w-5 h-5 text-gray-400 ml-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+                        </svg>
+                    </div>
+                </div>
+            `).join('');
+
+            document.querySelectorAll('.history-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    const chatId = parseInt(item.dataset.chatId);
+                    this.showChatDetailPage(chatId);
+                });
+            });
+        }
+
+        populateChatDetail(chatId) {
+            const session = this.chatHistoryData.find(s => s.id === chatId);
+            if (!session || !session.messages) return;
+
+            this.chatDetailTime.textContent = session.timestamp;
+            
+            const messagesHtml = session.messages.map(msg => {
+                if (msg.sender === 'user') {
+                    return `
+                        <div class="flex justify-end">
+                            <div class="max-w-xs md:max-w-md">
+                                <div class="bg-white text-black rounded-2xl px-5 py-4 shadow-lg">
+                                    <p class="leading-relaxed break-words overflow-wrap-anywhere">${msg.message}</p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    return `
+                        <div class="flex justify-start">
+                            <div class="max-w-xs md:max-w-md relative group">
+                                <div class="bg-gray-800 rounded-3xl rounded-tl-lg px-5 py-4 shadow-lg border border-gray-700">
+                                    <p class="text-white leading-relaxed break-words overflow-wrap-anywhere">${msg.message}</p>
+                                </div>
+                                <div class="flex items-center space-x-2 mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <button class="ai-copy-btn p-1 hover:bg-gray-700 rounded transition-colors" data-message="${msg.message.replace(/"/g, '&quot;')}">
+                                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+            }).join('');
+            
+            this.chatDetailContent.innerHTML = `<div class="space-y-4">${messagesHtml}</div>`;
+        }
+
+        clearAllChatHistory() {
+            if (this.chatHistoryData.length === 0) return;
+            
+            this.showCustomConfirm(
+                'ลบประวัติการสนทนา',
+                'คุณต้องการลบประวัติการสนทนาทั้งหมดหรือไม่? การดำเนินการนี้ไม่สามารถย้อนกลับได้',
+                () => {
+                    this.chatHistoryData = [];
+                    this.saveChatHistory();
+                    this.populateHistoryList();
+                    this.updateClearHistoryButtonState();
+                }
+            );
+        }
+
+        resetChatHistory() {
+            if (this.currentChatSession.length === 0) return;
+            
+            this.saveSessionToHistory();
+            
+            this.currentChatSession = [];
+            this.sessionId = Date.now();
+            localStorage.removeItem('sparkTopo_currentSession');
+            
+            this.chatContainer.innerHTML = `
+                <div class="flex justify-start message-slide-in">
+                    <div class="max-w-xs md:max-w-md relative group">
+                        <div class="bg-gray-800 rounded-3xl rounded-tl-lg px-5 py-4 shadow-lg border border-gray-700">
+                            <p class="text-white leading-relaxed">
+                                ยินดีต้อนรับสู่ SparkTopo! 🚀<br>
+                                ผมคือ AI Assistant ที่พร้อมช่วยเหลือคุณในทุกเรื่อง<br>
+                                เริ่มต้นการสนทนาได้เลยครับ
+                            </p>
+                        </div>
+                        <div class="flex items-center space-x-2 mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <button class="ai-copy-btn p-1 hover:bg-gray-700 rounded transition-colors" data-message="ยินดีต้อนรับสู่ SparkTopo! ผมคือ AI Assistant ที่พร้อมช่วยเหลือคุณในทุกเรื่อง เริ่มต้นการสนทนาได้เลยครับ">
+                                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                                </svg>
+                            </button>
+                            <button class="ai-feedback-btn p-1 hover:bg-gray-700 rounded transition-colors">
+                                <svg class="w-4 h-4 text-gray-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            this.updateResetButtonState();
+            this.closeMenu();
+        }
+
+        handleFeedback(button) {
+            const svg = button.querySelector('svg');
+            const isLiked = button.classList.contains('liked');
+            
+            if (isLiked) {
+                button.classList.remove('liked');
+                svg.setAttribute('fill', 'none');
+                svg.classList.remove('text-red-500');
+                svg.classList.add('text-gray-400');
+            } else {
+                button.classList.add('liked');
+                svg.setAttribute('fill', 'currentColor');
+                svg.classList.remove('text-gray-400');
+                svg.classList.add('text-red-500');
+            }
+        }
+
+        async copyToClipboard(text) {
+            try {
+                await navigator.clipboard.writeText(text);
+                this.showCopyPopup();
+            } catch (err) {
+                console.error('Failed to copy text: ', err);
+            }
+        }
+
+        showCopyPopup() {
+            this.copyPopup.classList.add('show');
+            setTimeout(() => {
+                this.copyPopup.classList.remove('show');
+            }, 2000);
+        }
+
+        showCustomConfirm(title, message, onConfirm) {
+            const overlay = document.createElement('div');
+            overlay.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4';
+            
+            overlay.innerHTML = `
+                <div class="bg-gray-800 border border-gray-600 rounded-2xl p-6 max-w-md w-full shadow-2xl transform transition-all">
+                    <div class="flex items-center space-x-3 mb-4">
+                        <div class="w-10 h-10 bg-red-500 rounded-full flex items-center justify-center">
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-bold text-white">${title}</h3>
+                    </div>
+                    <p class="text-gray-300 mb-6 leading-relaxed">${message}</p>
+                    <div class="flex space-x-3">
+                        <button id="confirmCancel" class="flex-1 bg-gray-700 hover:bg-gray-600 text-white py-3 px-4 rounded-xl transition-colors font-medium">
+                            ยกเลิก
+                        </button>
+                        <button id="confirmDelete" class="flex-1 bg-red-500 hover:bg-red-600 text-white py-3 px-4 rounded-xl transition-colors font-medium">
+                            ลบทั้งหมด
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(overlay);
+            
+            const cancelBtn = overlay.querySelector('#confirmCancel');
+            const deleteBtn = overlay.querySelector('#confirmDelete');
+            
+            const closeModal = () => {
+                overlay.style.opacity = '0';
+                setTimeout(() => {
+                    document.body.removeChild(overlay);
+                }, 200);
+            };
+            
+            cancelBtn.addEventListener('click', closeModal);
+            deleteBtn.addEventListener('click', () => {
+                onConfirm();
+                closeModal();
+            });
+            
+            overlay.addEventListener('click', (e) => {
+                if (e.target === overlay) closeModal();
+            });
+        }
+    }
+
+    let chatInstance;
+    document.addEventListener('DOMContentLoaded', () => {
+        chatInstance = new SparkTopoChat();
+    });
+</script>
+</body>
+</html>
