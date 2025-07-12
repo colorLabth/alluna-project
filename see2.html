@@ -341,90 +341,90 @@
     </div>
 
     <script>
-        class SparkTopoChat {
-            constructor() {
-                this.initializeElements();
-                this.initializeState();
-                this.createFileInput();
-                this.initializeEventListeners();
-                this.autoResizeTextarea();
-                this.updateSendButtonState();
-                this.handleMobileViewport();
-                this.loadCurrentSessionToChat();
+    class SparkTopoChat {
+        constructor() {
+            this.initializeElements();
+            this.initializeState();
+            this.createFileInput();
+            this.initializeEventListeners();
+            this.autoResizeTextarea();
+            this.updateSendButtonState();
+            this.handleMobileViewport();
+            this.loadCurrentSessionToChat();
+        }
+
+        initializeElements() {
+            this.chatContainer = document.getElementById('chatContainer');
+            this.messageInput = document.getElementById('messageInput');
+            this.sendButton = document.getElementById('sendButton');
+            this.attachButton = document.getElementById('attachButton');
+            this.menuButton = document.getElementById('menuButton');
+            this.menuDropdown = document.getElementById('menuDropdown');
+            this.resetChat = document.getElementById('resetChat');
+            this.chatHistory = document.getElementById('chatHistory');
+            this.copyPopup = document.getElementById('copyPopup');
+            
+            this.chatPage = document.getElementById('chatPage');
+            this.historyPage = document.getElementById('historyPage');
+            this.chatDetailPage = document.getElementById('chatDetailPage');
+            this.historyList = document.getElementById('historyList');
+            this.chatDetailContent = document.getElementById('chatDetailContent');
+            this.chatDetailTime = document.getElementById('chatDetailTime');
+            
+            this.backToChat = document.getElementById('backToChat');
+            this.backToHistory = document.getElementById('backToHistory');
+            this.clearAllHistory = document.getElementById('clearAllHistory');
+            this.attachedFilesContainer = document.getElementById('attachedFilesContainer');
+        }
+
+        initializeState() {
+            this.isTyping = false;
+            this.chatHistoryData = this.loadChatHistory();
+            this.currentPage = 'chat';
+            this.attachedFiles = [];
+            this.currentChatSession = this.loadCurrentSession();
+            this.sessionId = Date.now();
+        }
+
+        createFileInput() {
+            this.fileInput = document.createElement('input');
+            this.fileInput.type = 'file';
+            this.fileInput.multiple = false;
+            this.fileInput.accept = 'image/*';
+            this.fileInput.style.display = 'none';
+            document.body.appendChild(this.fileInput);
+            
+            this.fileInput.addEventListener('change', (e) => this.handleFileSelect(e));
+        }
+
+        handleMobileViewport() {
+            const handleResize = () => {
+                const vh = window.innerHeight * 0.01;
+                document.documentElement.style.setProperty('--vh', `${vh}px`);
+            };
+
+            window.addEventListener('resize', handleResize);
+            window.addEventListener('orientationchange', handleResize);
+            handleResize();
+
+            if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
+                document.body.style.paddingBottom = 'env(safe-area-inset-bottom)';
             }
+        }
 
-            initializeElements() {
-                this.chatContainer = document.getElementById('chatContainer');
-                this.messageInput = document.getElementById('messageInput');
-                this.sendButton = document.getElementById('sendButton');
-                this.attachButton = document.getElementById('attachButton');
-                this.menuButton = document.getElementById('menuButton');
-                this.menuDropdown = document.getElementById('menuDropdown');
-                this.resetChat = document.getElementById('resetChat');
-                this.chatHistory = document.getElementById('chatHistory');
-                this.copyPopup = document.getElementById('copyPopup');
-                
-                this.chatPage = document.getElementById('chatPage');
-                this.historyPage = document.getElementById('historyPage');
-                this.chatDetailPage = document.getElementById('chatDetailPage');
-                this.historyList = document.getElementById('historyList');
-                this.chatDetailContent = document.getElementById('chatDetailContent');
-                this.chatDetailTime = document.getElementById('chatDetailTime');
-                
-                this.backToChat = document.getElementById('backToChat');
-                this.backToHistory = document.getElementById('backToHistory');
-                this.clearAllHistory = document.getElementById('clearAllHistory');
-                this.attachedFilesContainer = document.getElementById('attachedFilesContainer');
-            }
-
-            initializeState() {
-                this.isTyping = false;
-                this.chatHistoryData = this.loadChatHistory();
-                this.currentPage = 'chat';
-                this.attachedFiles = [];
-                this.currentChatSession = this.loadCurrentSession();
-                this.sessionId = Date.now();
-            }
-
-            createFileInput() {
-                this.fileInput = document.createElement('input');
-                this.fileInput.type = 'file';
-                this.fileInput.multiple = false;
-                this.fileInput.accept = 'image/*';
-                this.fileInput.style.display = 'none';
-                document.body.appendChild(this.fileInput);
-                
-                this.fileInput.addEventListener('change', (e) => this.handleFileSelect(e));
-            }
-
-            handleMobileViewport() {
-                const handleResize = () => {
-                    const vh = window.innerHeight * 0.01;
-                    document.documentElement.style.setProperty('--vh', `${vh}px`);
-                };
-
-                window.addEventListener('resize', handleResize);
-                window.addEventListener('orientationchange', handleResize);
-                handleResize();
-
-                if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
-                    document.body.style.paddingBottom = 'env(safe-area-inset-bottom)';
-                }
-            }
-
-            updateSendButtonState() {
-                const hasText = this.messageInput.value.trim().length > 0;
-                const hasFiles = this.attachedFiles.length > 0;
-                const canSend = (hasText || hasFiles) && !this.isTyping;
-                
-                this.sendButton.disabled = !canSend;
-                
-                if (canSend) {
-                    this.sendButton.classList.remove('opacity-50', 'bg-gray-700', 'text-gray-500');
-                    this.sendButton.classList.add('bg-white', 'text-black', 'shadow-lg');
-                } else {
-                    this.sendButton.classList.add('opacity-50', 'bg-gray-700', 'text-gray-500');
-                    this.sendButton.classList.remove('bg-white', 'text-black', 'shadow-lg');
+        updateSendButtonState() {
+            const hasText = this.messageInput.value.trim().length > 0;
+            const hasFiles = this.attachedFiles.length > 0;
+            const canSend = (hasText || hasFiles) && !this.isTyping;
+            
+            this.sendButton.disabled = !canSend;
+            
+            if (canSend) {
+                this.sendButton.classList.remove('opacity-50', 'bg-gray-700', 'text-gray-500');
+                this.sendButton.classList.add('bg-white', 'text-black', 'shadow-lg');
+            } else {
+                this.sendButton.classList.add('opacity-50', 'bg-gray-700', 'text-gray-500');
+                this.sendButton.classList.remove('bg-white', 'text-black', 'shadow-lg');
             }
             
             this.updateResetButtonState();
@@ -556,6 +556,7 @@
             
             if (file.size > 10 * 1024 * 1024) {
                 alert(`ไฟล์ ${file.name} มีขนาดใหญ่เกินไป (สูงสุด 10MB)`);
+                event.target.value = '';
                 return;
             }
             
@@ -572,6 +573,9 @@
             
             this.attachedFiles.push(fileObj);
             this.updateAttachedFilesDisplay();
+            
+            // รีเซ็ต input เพื่อให้เลือกไฟล์เดิมได้อีกครั้ง
+            event.target.value = '';
         }
 
         updateAttachedFilesDisplay() {
