@@ -687,7 +687,7 @@
 
         addImageMessage(imageUrl, fileName) {
             const messageDiv = document.createElement('div');
-            messageDiv.className = 'message-slide-in mt-5';
+            messageDiv.className = 'message-slide-in mt-2';
             messageDiv.innerHTML = `
                 <div class="flex justify-end">
                     <div class="max-w-xs md:max-w-md">
@@ -707,7 +707,7 @@
             messageDiv.className = 'message-slide-in';
 
             if (sender === 'user') {
-                messageDiv.className += ' mt-5';
+                messageDiv.className += ' mt-2';
                 messageDiv.innerHTML = `
                     <div class="flex justify-end">
                         <div class="max-w-xs md:max-w-md">
@@ -718,7 +718,7 @@
                     </div>
                 `;
             } else {
-                messageDiv.className += ' mt-5';
+                messageDiv.className += ' mt-2';
                 messageDiv.innerHTML = `
                     <div class="flex justify-start">
                         <div class="max-w-xs md:max-w-md relative group">
