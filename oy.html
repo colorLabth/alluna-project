@@ -687,7 +687,7 @@
 
         addImageMessage(imageUrl, fileName) {
             const messageDiv = document.createElement('div');
-            messageDiv.className = 'message-slide-in mt-2';
+            messageDiv.className = 'message-slide-in mt-4';
             messageDiv.innerHTML = `
                 <div class="flex justify-end">
                     <div class="max-w-xs md:max-w-md">
@@ -704,7 +704,7 @@
 
         addMessage(content, sender) {
             const messageDiv = document.createElement('div');
-            messageDiv.className = 'message-slide-in';
+            messageDiv.className = 'message-slide-in mt-4';
 
             if (sender === 'user') {
                 messageDiv.className += ' mt-2';
@@ -985,11 +985,11 @@
             
             const messagesHtml = session.messages.map((msg, index) => {
                 const isUser = msg.sender === 'user';
-                const marginClass = isUser ? 'mt-2' : 'mt-2';
+                const marginClass = isUser ? 'mt-4' : 'mt-4';
                 
                 if (isUser) {
                     return `
-                        <div class="mt-5">
+                        <div class="mt-4">
                             <div class="flex justify-end">
                                 <div class="max-w-xs md:max-w-md">
                                     <div class="bg-white text-black rounded-2xl px-5 py-4 shadow-lg">
@@ -1001,7 +1001,7 @@
                     `;
                 } else {
                     return `
-                        <div class="mt-5">
+                        <div class="mt-4">
                             <div class="flex justify-start">
                                 <div class="max-w-xs md:max-w-md relative group">
                                     <div class="bg-gray-800 rounded-3xl rounded-tl-lg px-5 py-4 shadow-lg border border-gray-700">
