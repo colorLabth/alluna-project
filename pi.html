@@ -4,21 +4,29 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>SparkTopo AI Chat</title>
+    <!-- Font Awesome for icons (ellipsis, close, emoji, send) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&display=swap');
 
         :root {
-            --primary-bg: #121212; /* Dark background */
-            --secondary-bg: #1e1e1e; /* Slightly lighter dark for components */
-            --tertiary-bg: #2b2b2b; /* Even lighter dark for inputs */
-            --text-color: #e0e0e0; /* Light grey for text */
-            --placeholder-color: #888; /* Grey for placeholders */
-            --accent-color: #bbbbbb; /* Light grey for accents like send button */
-            --border-color: #444; /* Dark grey for borders */
-            --message-bg-user: #3a3a3a; /* Darker grey for user messages */
-            --message-bg-ai: #282828; /* Slightly lighter dark for AI messages */
-            --scroll-thumb: #555;
-            --scroll-track: #222;
+            --primary-bg: #1A1A1A; /* Very dark grey, almost black */
+            --secondary-bg: #2C2C2C; /* Darker grey for header/input area */
+            --tertiary-bg: #3A3A3A; /* Medium dark grey for input field */
+            --text-color: #E0E0E0; /* Light grey for general text */
+            --placeholder-color: #888888; /* Grey for placeholders */
+            --ai-message-bg: #3C3C3C; /* Dark grey for AI message bubbles */
+            --user-message-bg: #007AFF; /* Blue for user messages (can be changed to grey if preferred) */
+            --user-message-text: #FFFFFF; /* White text for user messages */
+            --ai-avatar-bg: #555555; /* Background for AI avatar circle */
+            --border-color: #444444; /* Darker grey for subtle borders */
+            --powered-by-text: #AAAAAA; /* Lighter grey for "Powered by" text */
+            --privacy-text: #BBBBBB; /* Text color for privacy policy */
+            --privacy-link: #8AB4F8; /* Link color for privacy policy */
+            --quick-reply-bg: #4A4A4A; /* Background for quick reply buttons */
+            --quick-reply-text: #E0E0E0; /* Text for quick reply buttons */
+            --scroll-thumb: #666666;
+            --scroll-track: #222222;
         }
 
         /* Basic Reset & Font */
@@ -44,27 +52,61 @@
             flex-direction: column;
             height: 100vh; /* Full viewport height */
             width: 100%;
-            max-width: 100%; /* Ensure it doesn't exceed viewport width */
+            max-width: 100%;
             margin: 0 auto;
             background-color: var(--primary-bg);
-            border: none; /* No border for full screen */
-            box-shadow: none; /* No shadow for full screen */
         }
 
         /* Header */
         .chat-header {
             background-color: var(--secondary-bg);
             color: var(--text-color);
-            padding: 15px;
-            text-align: center;
-            font-size: 1.2em;
-            font-weight: 600;
+            padding: 12px 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
             border-bottom: 1px solid var(--border-color);
-            flex-shrink: 0; /* Prevent header from shrinking */
+            flex-shrink: 0;
+            gap: 10px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header-logo {
+            width: 32px;
+            height: 32px;
+            background-color: #FFFFFF; /* White circle for the logo */
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            font-size: 1.2em;
+            color: var(--primary-bg);
+        }
+
+        .header-title {
+            font-size: 1.1em;
+            font-weight: 600;
+        }
+
+        .header-icons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .header-icon {
+            color: var(--text-color);
+            font-size: 1.1em;
+            cursor: pointer;
         }
 
         /* Chat Messages Area */
-        .chat-messages {
+        .chat-messages-wrapper {
             flex-grow: 1; /* Take all available space */
             padding: 15px;
             overflow-y: auto; /* Enable scrolling for messages */
@@ -75,129 +117,301 @@
         }
 
         /* Custom Scrollbar for Webkit Browsers */
-        .chat-messages::-webkit-scrollbar {
+        .chat-messages-wrapper::-webkit-scrollbar {
             width: 8px;
         }
 
-        .chat-messages::-webkit-scrollbar-track {
+        .chat-messages-wrapper::-webkit-scrollbar-track {
             background: var(--scroll-track);
         }
 
-        .chat-messages::-webkit-scrollbar-thumb {
+        .chat-messages-wrapper::-webkit-scrollbar-thumb {
             background-color: var(--scroll-thumb);
             border-radius: 10px;
             border: 2px solid var(--scroll-track);
         }
 
         /* Message Styling */
-        .message {
-            max-width: 80%;
-            padding: 10px 15px;
-            border-radius: 18px;
-            line-height: 1.4;
-            word-wrap: break-word; /* Ensure long words wrap */
-            color: var(--text-color);
+        .message-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            max-width: 90%; /* Adjust max-width for overall message row */
         }
 
-        .message.user {
+        .message-row.user {
             align-self: flex-end; /* Align user messages to the right */
-            background-color: var(--message-bg-user);
-            border-bottom-right-radius: 4px; /* Slightly different corner for user */
+            justify-content: flex-end;
         }
 
-        .message.ai {
+        .message-row.ai {
             align-self: flex-start; /* Align AI messages to the left */
-            background-color: var(--message-bg-ai);
-            border-bottom-left-radius: 4px; /* Slightly different corner for AI */
+        }
+
+        .ai-avatar {
+            width: 32px;
+            height: 32px;
+            background-color: var(--ai-avatar-bg);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-shrink: 0; /* Prevent avatar from shrinking */
+            overflow: hidden; /* Ensure image fits */
+        }
+
+        .ai-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .message-content {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .message-bubble {
+            padding: 10px 14px;
+            border-radius: 18px; /* Default large radius */
+            line-height: 1.4;
+            word-wrap: break-word;
+            max-width: 100%; /* Max width within its row */
+        }
+
+        .message-row.ai .message-bubble {
+            background-color: var(--ai-message-bg);
+            color: var(--text-color);
+            border-top-left-radius: 4px; /* Smaller radius on top-left for AI */
+        }
+
+        .message-row.user .message-bubble {
+            background-color: var(--user-message-bg);
+            color: var(--user-message-text);
+            border-top-right-radius: 4px; /* Smaller radius on top-right for user */
+        }
+
+        /* Quick Reply Suggestions */
+        .quick-replies {
+            padding: 15px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: flex-end; /* Align to the right like user messages */
+            border-top: 1px solid var(--border-color);
+            background-color: var(--primary-bg); /* Match main background */
+            flex-shrink: 0;
+        }
+
+        .quick-reply-button {
+            background-color: var(--quick-reply-bg);
+            color: var(--quick-reply-text);
+            border: none;
+            border-radius: 18px;
+            padding: 8px 15px;
+            font-size: 0.9em;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            white-space: nowrap; /* Prevent text wrapping */
+            outline: none;
+        }
+
+        .quick-reply-button:hover {
+            background-color: #5A5A5A;
+        }
+
+        .quick-reply-button:active {
+            background-color: #6A6A6A;
+        }
+
+        /* Footer Area */
+        .chat-footer {
+            background-color: var(--secondary-bg);
+            padding: 10px 15px;
+            border-top: 1px solid var(--border-color);
+            flex-shrink: 0;
+        }
+
+        .powered-by {
+            text-align: center;
+            font-size: 0.75em;
+            color: var(--powered-by-text);
+            margin-bottom: 8px;
+        }
+
+        .privacy-policy {
+            background-color: var(--secondary-bg); /* Same as footer background */
+            color: var(--privacy-text);
+            font-size: 0.8em;
+            padding: 8px 12px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            border: 1px solid var(--border-color); /* Subtle border for distinction */
+        }
+
+        .privacy-policy a {
+            color: var(--privacy-link);
+            text-decoration: none;
+        }
+
+        .privacy-policy a:hover {
+            text-decoration: underline;
+        }
+
+        .privacy-policy .close-btn {
+            background: none;
+            border: none;
+            color: var(--privacy-text);
+            font-size: 1.1em;
+            cursor: pointer;
+            padding: 0 5px;
+            outline: none;
         }
 
         /* Chat Input Area */
         .chat-input-area {
             display: flex;
-            padding: 15px;
-            background-color: var(--secondary-bg);
-            border-top: 1px solid var(--border-color);
+            align-items: center;
             gap: 10px;
-            flex-shrink: 0; /* Prevent input area from shrinking */
+            background-color: var(--secondary-bg); /* Match footer background */
+            padding-bottom: 15px; /* Add padding to the bottom of the input area */
+            padding-left: 15px;
+            padding-right: 15px;
+        }
+
+        .chat-input-wrapper {
+            flex-grow: 1;
+            position: relative;
+            display: flex;
+            align-items: center;
+            background-color: var(--tertiary-bg);
+            border-radius: 25px;
+            border: 1px solid var(--border-color);
+            padding-right: 10px; /* Space for send button if inside */
         }
 
         .chat-input {
             flex-grow: 1;
             padding: 12px 15px;
-            border: 1px solid var(--border-color);
-            border-radius: 25px;
-            background-color: var(--tertiary-bg);
+            border: none;
+            background-color: transparent; /* Make input background transparent */
             color: var(--text-color);
             font-size: 1em;
-            outline: none; /* Remove outline on focus */
-            resize: none; /* Disable textarea resize handle */
-            min-height: 45px; /* Minimum height for input */
-            max-height: 150px; /* Max height before scrolling */
-            overflow-y: auto; /* Allow internal scrolling if content exceeds max-height */
-            -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+            outline: none;
+            resize: none;
+            min-height: 45px;
+            max-height: 150px;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            border-radius: 25px; /* Apply to input itself for consistency */
         }
 
         .chat-input::placeholder {
             color: var(--placeholder-color);
         }
 
-        .send-button {
-            background-color: var(--accent-color);
-            color: var(--primary-bg); /* Dark text on light button */
-            border: none;
-            border-radius: 50%; /* Circular button */
-            width: 45px;
-            height: 45px;
-            min-width: 45px; /* Ensure it stays circular */
+        .input-icons {
             display: flex;
-            justify-content: center;
-            align-items: center;
+            gap: 10px;
+            padding-right: 10px; /* Space for icons inside wrapper */
+        }
+
+        .input-icon {
+            color: var(--placeholder-color); /* Use placeholder color for icons */
+            font-size: 1.2em;
             cursor: pointer;
-            font-size: 1.5em; /* Icon size */
-            transition: background-color 0.2s ease;
-            outline: none;
+            transition: color 0.2s ease;
         }
 
-        .send-button:hover {
-            background-color: #cccccc; /* Slightly lighter on hover */
+        .input-icon.send-icon {
+            color: var(--accent-color); /* Make send icon more prominent */
+            font-size: 1.4em;
         }
 
-        .send-button:active {
-            background-color: #aaaaaa; /* Darker when clicked */
+        .input-icon:hover {
+            color: var(--text-color);
         }
 
         /* Responsive Adjustments */
         @media (max-width: 600px) {
             .chat-header {
-                font-size: 1.1em;
-                padding: 12px;
+                padding: 10px 12px;
+            }
+            .header-title {
+                font-size: 1em;
+            }
+            .header-logo {
+                width: 28px;
+                height: 28px;
+                font-size: 1em;
+            }
+            .header-icons {
+                gap: 12px;
+            }
+            .header-icon {
+                font-size: 1em;
             }
 
-            .chat-messages {
+            .chat-messages-wrapper {
                 padding: 10px;
             }
 
-            .message {
+            .message-bubble {
                 padding: 8px 12px;
                 font-size: 0.95em;
             }
 
-            .chat-input-area {
-                padding: 10px;
-                gap: 8px;
+            .ai-avatar {
+                width: 28px;
+                height: 28px;
             }
 
-            .chat-input, .send-button {
+            .quick-replies {
+                padding: 10px;
+                gap: 6px;
+            }
+            .quick-reply-button {
+                padding: 6px 12px;
+                font-size: 0.85em;
+            }
+
+            .chat-footer {
+                padding: 8px 12px;
+            }
+            .powered-by {
+                font-size: 0.7em;
+            }
+            .privacy-policy {
+                font-size: 0.75em;
+                padding: 6px 10px;
+                margin-bottom: 8px;
+            }
+            .privacy-policy .close-btn {
+                font-size: 1em;
+            }
+
+            .chat-input-area {
+                padding-bottom: 12px;
+                padding-left: 12px;
+                padding-right: 12px;
+                gap: 8px;
+            }
+            .chat-input, .input-icon {
                 min-height: 40px;
                 height: 40px;
-                width: 40px;
-                min-width: 40px;
             }
             .chat-input {
                 padding: 10px 12px;
                 font-size: 0.95em;
             }
-            .send-button {
+            .input-icon {
+                font-size: 1.1em;
+            }
+            .input-icon.send-icon {
                 font-size: 1.3em;
             }
         }
@@ -206,30 +420,123 @@
 <body>
     <div class="chat-container">
         <div class="chat-header">
-            SparkTopo AI Chat
-        </div>
-        <div class="chat-messages" id="chat-messages">
-            <div class="message ai">สวัสดีครับ! มีอะไรให้ SparkTopo AI ช่วยได้บ้างครับ?</div>
+            <div class="header-left">
+                <div class="header-logo">C</div> <!-- Placeholder for Chatbase-like logo -->
+                <div class="header-title">Chatbase AI Agent</div>
             </div>
-        <div class="chat-input-area">
-            <textarea id="chat-input" class="chat-input" placeholder="พิมพ์ข้อความของคุณที่นี่..." rows="1"></textarea>
-            <button id="send-button" class="send-button">➤</button>
+            <div class="header-icons">
+                <i class="fas fa-ellipsis-h header-icon"></i> <!-- Ellipsis icon -->
+                <i class="fas fa-times header-icon"></i> <!-- Close icon -->
+            </div>
+        </div>
+
+        <div class="chat-messages-wrapper" id="chat-messages-wrapper">
+            <!-- AI Welcome Message -->
+            <div class="message-row ai">
+                <div class="ai-avatar">
+                    <img src="https://placehold.co/32x32/555555/FFFFFF?text=C" alt="AI Avatar" onerror="this.onerror=null;this.src='https://placehold.co/32x32/555555/FFFFFF?text=AI';" />
+                </div>
+                <div class="message-content">
+                    <div class="message-bubble">👋 Hi! I am SparkTopo AI, ask me anything about SparkTopo!</div>
+                </div>
+            </div>
+
+            <!-- AI Second Message -->
+            <div class="message-row ai">
+                <div class="ai-avatar">
+                    <img src="https://placehold.co/32x32/555555/FFFFFF?text=C" alt="AI Avatar" onerror="this.onerror=null;this.src='https://placehold.co/32x32/555555/FFFFFF?text=AI';" />
+                </div>
+                <div class="message-content">
+                    <div class="message-bubble">By the way, you can create an agent like me for your website! 😔</div>
+                </div>
+            </div>
+
+            <!-- User messages will be appended here -->
+            <!-- Example User Messages (for initial display) -->
+            <div class="message-row user">
+                <div class="message-content">
+                    <div class="message-bubble">What is SparkTopo?</div>
+                </div>
+            </div>
+            <div class="message-row user">
+                <div class="message-content">
+                    <div class="message-bubble">How do I add data to my agent?</div>
+                </div>
+            </div>
+            <div class="message-row user">
+                <div class="message-content">
+                    <div class="message-bubble">Is there a free plan?</div>
+                </div>
+            </div>
+            <div class="message-row user">
+                <div class="message-content">
+                    <div class="message-bubble">What are AI actions?</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Reply Suggestions -->
+        <div class="quick-replies" id="quick-replies">
+            <button class="quick-reply-button" data-message="What is SparkTopo?">What is SparkTopo?</button>
+            <button class="quick-reply-button" data-message="How do I add data to my agent?">How do I add data to my agent?</button>
+            <button class="quick-reply-button" data-message="Is there a free plan?">Is there a free plan?</button>
+            <button class="quick-reply-button" data-message="What are AI actions?">What are AI actions?</button>
+        </div>
+
+        <div class="chat-footer">
+            <div class="powered-by">
+                <span class="header-logo" style="width: 16px; height: 16px; font-size: 0.8em;">C</span> Powered by SparkTopo
+            </div>
+            <div class="privacy-policy" id="privacy-policy-banner">
+                <span>By chatting, you agree to our <a href="#" target="_blank">privacy policy</a>.</span>
+                <button class="close-btn" id="close-privacy-btn"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="chat-input-area">
+                <div class="chat-input-wrapper">
+                    <textarea id="chat-input" class="chat-input" placeholder="Message..." rows="1"></textarea>
+                    <div class="input-icons">
+                        <i class="far fa-smile input-icon"></i> <!-- Emoji icon -->
+                        <i class="fas fa-paper-plane input-icon send-icon" id="send-button"></i> <!-- Send icon -->
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
         const chatInput = document.getElementById('chat-input');
         const sendButton = document.getElementById('send-button');
-        const chatMessages = document.getElementById('chat-messages');
+        const chatMessagesWrapper = document.getElementById('chat-messages-wrapper');
+        const quickReplyButtons = document.querySelectorAll('.quick-reply-button');
+        const privacyPolicyBanner = document.getElementById('privacy-policy-banner');
+        const closePrivacyBtn = document.getElementById('close-privacy-btn');
 
         // Function to add a message to the chat
         function addMessage(text, sender) {
-            const messageElement = document.createElement('div');
-            messageElement.classList.add('message', sender);
-            messageElement.textContent = text;
-            chatMessages.appendChild(messageElement);
+            const messageRow = document.createElement('div');
+            messageRow.classList.add('message-row', sender);
+
+            if (sender === 'ai') {
+                const aiAvatar = document.createElement('div');
+                aiAvatar.classList.add('ai-avatar');
+                // Using a placeholder image for AI avatar
+                aiAvatar.innerHTML = `<img src="https://placehold.co/32x32/555555/FFFFFF?text=C" alt="AI Avatar" onerror="this.onerror=null;this.src='https://placehold.co/32x32/555555/FFFFFF?text=AI';" />`;
+                messageRow.appendChild(aiAvatar);
+            }
+
+            const messageContent = document.createElement('div');
+            messageContent.classList.add('message-content');
+
+            const messageBubble = document.createElement('div');
+            messageBubble.classList.add('message-bubble');
+            messageBubble.innerHTML = text; // Use innerHTML to allow emojis and basic formatting
+            messageContent.appendChild(messageBubble);
+
+            messageRow.appendChild(messageContent);
+            chatMessagesWrapper.appendChild(messageRow);
+
             // Scroll to the bottom
-            chatMessages.scrollTop = chatMessages.scrollHeight;
+            chatMessagesWrapper.scrollTop = chatMessagesWrapper.scrollHeight;
         }
 
         // Handle sending message
@@ -262,12 +569,29 @@
             }
         }
 
-        // Initialize textarea height
+        // Handle quick reply buttons
+        quickReplyButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const message = button.dataset.message;
+                addMessage(message, 'user');
+                // Simulate AI response for quick reply
+                setTimeout(() => {
+                    const aiResponse = `SparkTopo AI ได้รับคำถาม: "${message}" ครับ`;
+                    addMessage(aiResponse, 'ai');
+                }, 1000);
+            });
+        });
+
+        // Handle closing privacy policy banner
+        closePrivacyBtn.addEventListener('click', () => {
+            privacyPolicyBanner.style.display = 'none';
+        });
+
+        // Initialize textarea height and scroll to bottom on load
         document.addEventListener('DOMContentLoaded', () => {
             chatInput.style.height = 'auto';
             chatInput.style.height = (chatInput.scrollHeight) + 'px';
-            // Scroll to bottom on initial load if there are messages
-            chatMessages.scrollTop = chatMessages.scrollHeight;
+            chatMessagesWrapper.scrollTop = chatMessagesWrapper.scrollHeight;
         });
     </script>
 </body>
