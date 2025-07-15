@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SparkTopo AI Chat</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&display=swap');
+
+        :root {
+            --primary-bg: #121212; /* Dark background */
+            --secondary-bg: #1e1e1e; /* Slightly lighter dark for components */
+            --tertiary-bg: #2b2b2b; /* Even lighter dark for inputs */
+            --text-color: #e0e0e0; /* Light grey for text */
+            --placeholder-color: #888; /* Grey for placeholders */
+            --accent-color: #bbbbbb; /* Light grey for accents like send button */
+            --border-color: #444; /* Dark grey for borders */
+            --message-bg-user: #3a3a3a; /* Darker grey for user messages */
+            --message-bg-ai: #282828; /* Slightly lighter dark for AI messages */
+            --scroll-thumb: #555;
+            --scroll-track: #222;
+        }
+
+        /* Basic Reset & Font */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body, html {
+            font-family: 'IBM Plex Sans Thai', sans-serif;
+            background-color: var(--primary-bg);
+            color: var(--text-color);
+            height: 100%;
+            overflow: hidden; /* Prevent body scroll */
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Chat Container */
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh; /* Full viewport height */
+            width: 100%;
+            max-width: 100%; /* Ensure it doesn't exceed viewport width */
+            margin: 0 auto;
+            background-color: var(--primary-bg);
+            border: none; /* No border for full screen */
+            box-shadow: none; /* No shadow for full screen */
+        }
+
+        /* Header */
+        .chat-header {
+            background-color: var(--secondary-bg);
+            color: var(--text-color);
+            padding: 15px;
+            text-align: center;
+            font-size: 1.2em;
+            font-weight: 600;
+            border-bottom: 1px solid var(--border-color);
+            flex-shrink: 0; /* Prevent header from shrinking */
+        }
+
+        /* Chat Messages Area */
+        .chat-messages {
+            flex-grow: 1; /* Take all available space */
+            padding: 15px;
+            overflow-y: auto; /* Enable scrolling for messages */
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+        }
+
+        /* Custom Scrollbar for Webkit Browsers */
+        .chat-messages::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .chat-messages::-webkit-scrollbar-track {
+            background: var(--scroll-track);
+        }
+
+        .chat-messages::-webkit-scrollbar-thumb {
+            background-color: var(--scroll-thumb);
+            border-radius: 10px;
+            border: 2px solid var(--scroll-track);
+        }
+
+        /* Message Styling */
+        .message {
+            max-width: 80%;
+            padding: 10px 15px;
+            border-radius: 18px;
+            line-height: 1.4;
+            word-wrap: break-word; /* Ensure long words wrap */
+            color: var(--text-color);
+        }
+
+        .message.user {
+            align-self: flex-end; /* Align user messages to the right */
+            background-color: var(--message-bg-user);
+            border-bottom-right-radius: 4px; /* Slightly different corner for user */
+        }
+
+        .message.ai {
+            align-self: flex-start; /* Align AI messages to the left */
+            background-color: var(--message-bg-ai);
+            border-bottom-left-radius: 4px; /* Slightly different corner for AI */
+        }
+
+        /* Chat Input Area */
+        .chat-input-area {
+            display: flex;
+            padding: 15px;
+            background-color: var(--secondary-bg);
+            border-top: 1px solid var(--border-color);
+            gap: 10px;
+            flex-shrink: 0; /* Prevent input area from shrinking */
+        }
+
+        .chat-input {
+            flex-grow: 1;
+            padding: 12px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 25px;
+            background-color: var(--tertiary-bg);
+            color: var(--text-color);
+            font-size: 1em;
+            outline: none; /* Remove outline on focus */
+            resize: none; /* Disable textarea resize handle */
+            min-height: 45px; /* Minimum height for input */
+            max-height: 150px; /* Max height before scrolling */
+            overflow-y: auto; /* Allow internal scrolling if content exceeds max-height */
+            -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+        }
+
+        .chat-input::placeholder {
+            color: var(--placeholder-color);
+        }
+
+        .send-button {
+            background-color: var(--accent-color);
+            color: var(--primary-bg); /* Dark text on light button */
+            border: none;
+            border-radius: 50%; /* Circular button */
+            width: 45px;
+            height: 45px;
+            min-width: 45px; /* Ensure it stays circular */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            font-size: 1.5em; /* Icon size */
+            transition: background-color 0.2s ease;
+            outline: none;
+        }
+
+        .send-button:hover {
+            background-color: #cccccc; /* Slightly lighter on hover */
+        }
+
+        .send-button:active {
+            background-color: #aaaaaa; /* Darker when clicked */
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 600px) {
+            .chat-header {
+                font-size: 1.1em;
+                padding: 12px;
+            }
+
+            .chat-messages {
+                padding: 10px;
+            }
+
+            .message {
+                padding: 8px 12px;
+                font-size: 0.95em;
+            }
+
+            .chat-input-area {
+                padding: 10px;
+                gap: 8px;
+            }
+
+            .chat-input, .send-button {
+                min-height: 40px;
+                height: 40px;
+                width: 40px;
+                min-width: 40px;
+            }
+            .chat-input {
+                padding: 10px 12px;
+                font-size: 0.95em;
+            }
+            .send-button {
+                font-size: 1.3em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-header">
+            SparkTopo AI Chat
+        </div>
+        <div class="chat-messages" id="chat-messages">
+            <div class="message ai">สวัสดีครับ! มีอะไรให้ SparkTopo AI ช่วยได้บ้างครับ?</div>
+            </div>
+        <div class="chat-input-area">
+            <textarea id="chat-input" class="chat-input" placeholder="พิมพ์ข้อความของคุณที่นี่..." rows="1"></textarea>
+            <button id="send-button" class="send-button">➤</button>
+        </div>
+    </div>
+
+    <script>
+        const chatInput = document.getElementById('chat-input');
+        const sendButton = document.getElementById('send-button');
+        const chatMessages = document.getElementById('chat-messages');
+
+        // Function to add a message to the chat
+        function addMessage(text, sender) {
+            const messageElement = document.createElement('div');
+            messageElement.classList.add('message', sender);
+            messageElement.textContent = text;
+            chatMessages.appendChild(messageElement);
+            // Scroll to the bottom
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        // Handle sending message
+        sendButton.addEventListener('click', sendMessage);
+        chatInput.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault(); // Prevent new line on Enter
+                sendMessage();
+            }
+        });
+
+        // Auto-resize textarea
+        chatInput.addEventListener('input', () => {
+            chatInput.style.height = 'auto';
+            chatInput.style.height = (chatInput.scrollHeight) + 'px';
+        });
+
+        function sendMessage() {
+            const messageText = chatInput.value.trim();
+            if (messageText !== '') {
+                addMessage(messageText, 'user');
+                chatInput.value = ''; // Clear input
+                chatInput.style.height = 'auto'; // Reset height
+
+                // Simulate AI response (replace with actual AI integration)
+                setTimeout(() => {
+                    const aiResponse = `SparkTopo AI ได้รับข้อความของคุณ: "${messageText}" ครับ`;
+                    addMessage(aiResponse, 'ai');
+                }, 1000);
+            }
+        }
+
+        // Initialize textarea height
+        document.addEventListener('DOMContentLoaded', () => {
+            chatInput.style.height = 'auto';
+            chatInput.style.height = (chatInput.scrollHeight) + 'px';
+            // Scroll to bottom on initial load if there are messages
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        });
+    </script>
+</body>
+</html>
