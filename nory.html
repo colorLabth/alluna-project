@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SparkTopo AI Chat</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'thai': ['Inter', 'Noto Sans Thai', 'sans-serif']
+                    },
+                    colors: {
+                        'spark-dark': '#0a0a0a',
+                        'spark-gray': '#1a1a1a',
+                        'spark-light': '#2a2a2a',
+                        'spark-border': '#333333',
+                        'spark-text': '#e5e7eb'
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        *::-webkit-scrollbar {
+            display: none;
+        }
+        
+        html {
+            scroll-behavior: smooth;
+            -webkit-text-size-adjust: 100%;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        
+        * {
+            scroll-behavior: smooth;
+        }
+        
+        body {
+            overscroll-behavior: none;
+            -webkit-overflow-scrolling: touch;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        :root {
+            --spark-dark: #0a0a0a;
+            --spark-gray: #1a1a1a;
+            --spark-text: #ffffff;
+        }
+        
+        .bg-spark-dark { background-color: var(--spark-dark); }
+        .bg-spark-gray { background-color: var(--spark-gray); }
+        .text-spark-text { color: var(--spark-text); }
+        .font-thai { font-family: 'Inter', sans-serif; }
+        
+        .typing-dots {
+            animation: typing 1.4s infinite ease-in-out;
+        }
+        .typing-dots:nth-child(1) { animation-delay: 0s; }
+        .typing-dots:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dots:nth-child(3) { animation-delay: 0.4s; }
+        
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+            30% { transform: translateY(-10px); opacity: 1; }
+        }
+        
+        .message-slide-in {
+            animation: slideInUp 0.3s ease-out;
+        }
+        
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .hover-lift {
+            transition: all 0.2s ease;
+        }
+        .hover-lift:hover {
+            transform: translateY(-1px);
+        }
+        
+        .menu-dropdown {
+            transform: translateY(-10px);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.2s ease;
+            pointer-events: none;
+        }
+        
+        .menu-dropdown.show {
+            transform: translateY(0);
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+        }
+        
+        .hover-smooth {
+            transition: all 0.15s ease-out;
+        }
+        
+        .hover-smooth:hover {
+            transition: all 0.1s ease-in;
+        }
+        
+
+        
+        .page-transition {
+            transition: transform 0.3s ease-in-out;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .slide-left {
+            transform: translateX(-100%);
+        }
+
+        .slide-right {
+            transform: translateX(100%);
+        }
+
+        .page-active {
+            transform: translateX(0);
+        }
+
+        .online-indicator {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .typing-cursor {
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        .mobile-safe-area {
+            height: 100vh;
+            height: 100dvh;
+            min-height: -webkit-fill-available;
+            min-height: fill-available;
+            width: 100vw;
+            max-width: 100vw;
+            overflow-x: hidden;
+        }
+        
+        @supports (-webkit-touch-callout: none) {
+            .mobile-safe-area {
+                height: -webkit-fill-available;
+            }
+        }
+        
+        /* Full screen support for all devices */
+        @media screen and (max-width: 768px) {
+            .mobile-safe-area {
+                height: 100vh;
+                height: calc(var(--vh, 1vh) * 100);
+            }
+        }
+        
+        /* PWA and fullscreen support */
+        @media all and (display-mode: fullscreen) {
+            .mobile-safe-area {
+                height: 100vh;
+            }
+        }
+        
+        @media all and (display-mode: standalone) {
+            .mobile-safe-area {
+                height: 100vh;
+            }
+        }
+
+        .fixed-input-area {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 50;
+            background: #1a1a1a;
+            border-top: 1px solid #333333;
+            padding: 1rem;
+            padding-bottom: max(1.5rem, env(safe-area-inset-bottom));
+        }
+
+        .chat-with-fixed-input {
+            padding-bottom: 140px;
+        }
+
+        @media (max-height: 600px) {
+            .fixed-input-area {
+                padding: 0.75rem;
+                padding-bottom: max(1rem, env(safe-area-inset-bottom));
+            }
+            .chat-with-fixed-input {
+                padding-bottom: 100px;
+            }
+        }
+    </style>
+</head>
+<body class="bg-spark-dark text-spark-text font-thai antialiased">
+    <div class="flex flex-col mobile-safe-area w-full bg-spark-gray overflow-hidden relative">
+        <div id="chatPage" class="flex flex-col h-full page-transition page-active">
+            <header class="bg-black px-6 py-4 flex items-center justify-between shadow-lg border-b border-gray-800">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-md">
+                        <svg class="w-6 h-6 text-black" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 2L13.09 8.26L22 9L13.09 9.74L12 16L10.91 9.74L2 9L10.91 8.26L12 2Z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold text-white tracking-wide">SparkTopo AI</h1>
+                        <div class="flex items-center space-x-2">
+                            <div class="w-2 h-2 bg-green-400 rounded-full online-indicator"></div>
+                            <span class="text-xs text-green-300">กำลังแชท</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="relative">
+                    <button id="menuButton" class="p-2 hover:bg-gray-800 rounded-xl transition-all hover-lift text-white">
+                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"/>
+                        </svg>
+                    </button>
+                    <div id="menuDropdown" class="menu-dropdown absolute right-0 top-12 bg-white border border-gray-200 rounded-xl shadow-xl w-48 py-2 z-50">
+                        <button id="resetChat" class="reset-btn w-full px-4 py-2 text-left hover:bg-gray-100 transition-colors flex items-center space-x-3 text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-gray-700" disabled>
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                            </svg>
+                            <span>รีเซ็ตแชท</span>
+                        </button>
+                        <button id="chatHistory" class="w-full px-4 py-2 text-left hover:bg-gray-100 transition-colors flex items-center space-x-3 text-gray-700">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            <span>ประวัติแชท</span>
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <div class="flex-1 flex flex-col min-h-0">
+                <div id="chatContainer" class="flex-1 overflow-y-auto flex flex-col space-y-4 px-6 pt-6 chat-with-fixed-input">
+                    <div class="flex justify-start message-slide-in">
+                        <div class="max-w-xs md:max-w-md relative group">
+                            <div class="bg-gray-800 rounded-3xl rounded-tl-lg px-5 py-4 shadow-lg border border-gray-700">
+                                <p class="text-white leading-relaxed">
+                                    ยินดีต้อนรับสู่ SparkTopo! 🚀<br>
+                                    ผมคือ Sptp ที่พร้อมช่วยเหลือคุณในทุกเรื่อง<br>
+                                    เริ่มต้นการสนทนา
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Typing Indicator -->
+                    <div id="typingIndicator" class="flex justify-start hidden">
+                        <div class="max-w-xs md:max-w-md relative group">
+                            <div class="bg-gray-800 rounded-3xl rounded-tl-lg px-5 py-4 shadow-lg border border-gray-700">
+                                <div class="flex space-x-1">
+                                    <div class="w-2 h-2 bg-gray-400 rounded-full typing-dots"></div>
+                                    <div class="w-2 h-2 bg-gray-400 rounded-full typing-dots"></div>
+                                    <div class="w-2 h-2 bg-gray-400 rounded-full typing-dots"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Input Area -->
+                <div id="inputArea" class="fixed-input-area">
+                    <div id="attachedFilesContainer" class="hidden flex flex-wrap gap-2 mb-3"></div>
+                    
+                    <div class="flex items-center space-x-3">
+                        <input type="file" id="fileInput" accept="image/*" class="hidden">
+                        <button id="attachButton" class="text-gray-400 hover:text-white transition p-3 hover:scale-110 transform flex-shrink-0 hover:bg-gray-700 rounded-xl">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                            </svg>
+                        </button>
+                        
+                        <div class="flex-1 relative">
+                            <textarea 
+                                id="messageInput"
+                                placeholder="พิมพ์ข้อความ..."
+                                class="w-full bg-black border-2 border-gray-700 rounded-2xl px-5 py-4 text-white placeholder-gray-500 focus:outline-none focus:border-gray-500 transition resize-none min-h-[56px] overflow-hidden font-medium"
+                                rows="1"
+                            ></textarea>
+                        </div>
+                        
+                        <button 
+                            id="sendButton" 
+                            class="bg-gray-700 text-gray-500 opacity-50 p-4 rounded-full transition hover:scale-110 transform active:scale-95 flex-shrink-0 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
+                            disabled
+                        >
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="historyPage" class="flex flex-col h-full page-transition slide-right">
+            <header class="bg-gray-900 px-6 py-4 flex items-center justify-between shadow-lg border-b border-gray-700">
+                <div class="flex items-center space-x-3">
+                    <button id="backToChat" class="p-2 hover:bg-gray-700 rounded-xl transition-all hover-lift text-white">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+                        </svg>
+                    </button>
+                    <div>
+                        <h1 class="text-xl font-bold text-white tracking-wide">ประวัติการสนทนา</h1>
+                        <p class="text-xs text-gray-400">เลือกแชทที่ต้องการดู</p>
+                    </div>
+                </div>
+                
+
+            </header>
+
+          <div id="historyList" class="flex-1 overflow-y-auto px-6 py-6"></div>
+        </div>
+
+        <div id="chatDetailPage" class="flex flex-col h-full page-transition slide-right">
+            <header class="bg-gray-800 px-6 py-4 flex items-center justify-between shadow-lg border-b border-gray-600">
+                <div class="flex items-center space-x-3">
+                    <button id="backToHistory" class="p-2 hover:bg-gray-600 rounded-xl transition-all hover-lift text-white">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+                        </svg>
+                    </button>
+                    <div>
+                        <h1 class="text-xl font-bold text-white tracking-wide">รายละเอียดแชท</h1>
+                        <span id="chatDetailTime" class="text-xs text-gray-400"></span>
+                    </div>
+                </div>
+            </header>
+
+            <div id="chatDetailContent" class="flex-1 overflow-y-auto px-6 py-6 space-y-4"></div>
+        </div>
+    </div>
+
+    <script>
+        const messageInput = document.getElementById('messageInput');
+        const sendButton = document.getElementById('sendButton');
+        const chatContainer = document.getElementById('chatContainer');
+        const typingIndicator = document.getElementById('typingIndicator');
+        const menuButton = document.getElementById('menuButton');
+        const menuDropdown = document.getElementById('menuDropdown');
+        const resetChat = document.getElementById('resetChat');
+        const chatHistory = document.getElementById('chatHistory');
+        const backToChat = document.getElementById('backToChat');
+        const backToHistory = document.getElementById('backToHistory');
+        const clearAllHistory = document.getElementById('clearAllHistory');
+        const attachButton = document.getElementById('attachButton');
+        const fileInput = document.getElementById('fileInput');
+        const attachedFilesContainer = document.getElementById('attachedFilesContainer');
+        
+        // Page elements
+        const chatPage = document.getElementById('chatPage');
+        const historyPage = document.getElementById('historyPage');
+        const chatDetailPage = document.getElementById('chatDetailPage');
+        const historyList = document.getElementById('historyList');
+        const chatDetailContent = document.getElementById('chatDetailContent');
+        const chatDetailTime = document.getElementById('chatDetailTime');
+
+        // Navigation functions
+        function showChatPage() {
+            chatPage.className = 'flex flex-col h-full page-transition page-active';
+            historyPage.className = 'flex flex-col h-full page-transition slide-right';
+            chatDetailPage.className = 'flex flex-col h-full page-transition slide-right';
+        }
+
+        function showHistoryPage() {
+            chatPage.className = 'flex flex-col h-full page-transition slide-left';
+            historyPage.className = 'flex flex-col h-full page-transition page-active';
+            chatDetailPage.className = 'flex flex-col h-full page-transition slide-right';
+            loadChatHistory();
+        }
+
+        function showChatDetailPage() {
+            chatPage.className = 'flex flex-col h-full page-transition slide-left';
+            historyPage.className = 'flex flex-col h-full page-transition slide-left';
+            chatDetailPage.className = 'flex flex-col h-full page-transition page-active';
+        }
+
+        function scrollToBottom() {
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        function addMessage(message, isUser = false, imageData = null) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `flex justify-${isUser ? 'end' : 'start'} message-slide-in`;
+            
+            let imageHtml = '';
+            if (imageData) {
+                imageHtml = `<img src="${imageData}" alt="Attached image" class="max-w-full h-auto rounded-lg mb-2 shadow-md">`;
+            }
+            
+            if (isUser) {
+                messageDiv.innerHTML = `
+                    <div class="max-w-xs md:max-w-md relative group">
+                        <div class="bg-white rounded-3xl rounded-tr-lg px-5 py-4 shadow-lg">
+                            ${imageHtml}
+                            ${message ? `<p class="text-gray-900 leading-relaxed">${message}</p>` : ''}
+                        </div>
+                    </div>
+                `;
+            } else {
+                messageDiv.innerHTML = `
+                    <div class="max-w-xs md:max-w-md relative group">
+                        <div class="bg-gray-800 rounded-3xl rounded-tl-lg px-5 py-4 shadow-lg border border-gray-700">
+                            ${imageHtml}
+                            ${message ? `<p class="text-white leading-relaxed">${message}</p>` : ''}
+                        </div>
+                    </div>
+                `;
+            }
+            
+            chatContainer.insertBefore(messageDiv, typingIndicator);
+            scrollToBottom();
+        }
+
+        function addImageMessage(imageUrl, fileName) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message-slide-in';
+            messageDiv.innerHTML = `
+                <div class="flex justify-end">
+                    <div class="max-w-xs md:max-w-md">
+                        <div class="bg-white rounded-2xl p-2 shadow-lg">
+                            <img src="${imageUrl}" alt="${fileName}" class="w-full h-auto rounded-xl max-h-64 object-cover">
+                        </div>
+                    </div>
+                </div>
+            `;
+            chatContainer.insertBefore(messageDiv, typingIndicator);
+            scrollToBottom();
+        }
+
+        function addAttachedFile(file) {
+            // Only allow one file at a time
+            attachedFiles = [];
+            
+            const fileObj = {
+                id: Date.now().toString(),
+                file: file,
+                name: file.name,
+                size: file.size,
+                type: file.type
+            };
+            
+            attachedFiles.push(fileObj);
+            updateAttachedFilesDisplay();
+        }
+
+        function updateAttachedFilesDisplay() {
+            if (attachedFiles.length === 0) {
+                attachedFilesContainer.classList.add('hidden');
+                updateSendButton();
+                return;
+            }
+            
+            attachedFilesContainer.classList.remove('hidden');
+            attachedFilesContainer.innerHTML = attachedFiles.map(fileObj => {
+                const isImage = fileObj.type.startsWith('image/');
+                const fileSize = (fileObj.size / 1024).toFixed(1) + ' KB';
+                
+                return `
+                    <div class="bg-gray-800 border border-gray-600 rounded-lg p-2 flex items-center space-x-2 max-w-xs">
+                        <div class="flex-shrink-0">
+                            <svg class="w-4 h-4 text-blue-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"/></svg>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-white text-xs truncate">${fileObj.name}</p>
+                            <p class="text-gray-400 text-xs">${fileSize}</p>
+                        </div>
+                        <button class="flex-shrink-0 text-red-400 hover:text-red-300 transition" onclick="removeAttachedFile('${fileObj.id}')">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
+                        </button>
+                    </div>
+                `;
+            }).join('');
+            updateSendButton();
+        }
+
+        function removeAttachedFile(fileId) {
+            attachedFiles = attachedFiles.filter(f => f.id !== fileId);
+            updateAttachedFilesDisplay();
+        }
+
+        function clearAttachedFiles() {
+            attachedFiles = [];
+            attachedFilesContainer.classList.add('hidden');
+            attachedFilesContainer.innerHTML = '';
+        }
+
+        function showTyping() {
+            typingIndicator.classList.remove('hidden');
+            scrollToBottom();
+        }
+
+        function hideTyping() {
+            typingIndicator.classList.add('hidden');
+        }
+
+        function showSmoothWelcomeMessage() {
+            const welcomeText = 'ยินดีต้อนรับสู่ SparkTopo! 🚀<br>ผมคือ Sptp ที่พร้อมช่วยเหลือคุณในทุกเรื่อง<br>เริ่มต้นการสนทนา';
+            
+            // Create message element
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'flex justify-start';
+            messageDiv.innerHTML = `
+                <div class="max-w-xs md:max-w-md relative group">
+                    <div class="bg-gray-800 rounded-3xl rounded-tl-lg px-5 py-4 shadow-lg border border-gray-700">
+                        <p class="text-white leading-relaxed" id="welcomeText"></p>
+                    </div>
+                </div>
+            `;
+            
+            chatContainer.insertBefore(messageDiv, typingIndicator);
+            
+            const textElement = messageDiv.querySelector('#welcomeText');
+            let currentText = '';
+            let index = 0;
+            const fullText = welcomeText.replace(/<br>/g, '\n');
+            
+            function typeWriter() {
+                if (index < fullText.length) {
+                    if (fullText.charAt(index) === '\n') {
+                        currentText += '<br>';
+                    } else {
+                        currentText += fullText.charAt(index);
+                    }
+                    textElement.innerHTML = currentText;
+                    index++;
+                    setTimeout(typeWriter, 50); // Adjust speed here (50ms per character)
+                    scrollToBottom();
+                } else {
+                    // Add slide-in animation class after typing is complete
+                    messageDiv.classList.add('message-slide-in');
+                }
+            }
+            
+            typeWriter();
+        }
+
+        function sendMessage() {
+            const message = messageInput.value.trim();
+            const hasFiles = attachedFiles.length > 0;
+            if (!message && !hasFiles) return;
+
+            // Mark that user has sent a message
+            if (!hasUserSentMessage) {
+                hasUserSentMessage = true;
+                updateResetButton();
+            }
+
+            // Send attached files first
+            if (hasFiles) {
+                for (const fileObj of attachedFiles) {
+                    addImageMessage(URL.createObjectURL(fileObj.file), fileObj.name);
+                }
+            }
+            
+            // Send text message if exists
+            if (message) {
+                addMessage(message, true);
+            }
+            
+            // Clear inputs
+            messageInput.value = '';
+            messageInput.style.height = '56px';
+            clearAttachedFiles();
+            updateSendButton();
+            
+            // Show typing indicator
+            showTyping();
+            
+            // Simulate bot response
+            setTimeout(() => {
+                hideTyping();
+                let responses = [];
+                
+                if (hasFiles) {
+                    responses = [
+                        'ได้รับภาพแล้วครับ! ภาพนี้ดูน่าสนใจมากเลยครับ',
+                        'ขอบคุณสำหรับภาพครับ ผมเห็นแล้วครับ มีอะไรให้ช่วยเหลือเพิ่มเติมไหมครับ?',
+                        'ภาพที่ส่งมาสวยมากครับ! มีอะไรที่อยากให้ผมช่วยเกี่ยวกับภาพนี้ไหมครับ?',
+                        'เข้าใจแล้วครับ ได้รับภาพและข้อความแล้วครับ'
+                    ];
+                } else {
+                    responses = [
+                        'ขอบคุณสำหรับข้อความครับ! มีอะไรให้ช่วยเหลือเพิ่มเติมไหมครับ?',
+                        'เข้าใจแล้วครับ ผมจะช่วยคุณในเรื่องนี้เลยครับ',
+                        'นั่นเป็นคำถามที่น่าสนใจมากครับ ให้ผมคิดดูสักครู่นะครับ...',
+                        'ผมพร้อมช่วยเหลือคุณเสมอครับ! มีอะไรให้ช่วยไหมครับ?',
+                        'สวัสดีครับ! ผมคือ SparkTopo AI พร้อมให้บริการคุณตลอด 24 ชั่วโมงครับ',
+                        'ผมเข้าใจแล้วครับ มีอะไรอื่นที่อยากถามไหมครับ?',
+                        'ดีมากครับ! ผมยินดีช่วยเหลือคุณในเรื่องนี้ครับ',
+                        'ขอบคุณที่ใช้บริการ SparkTopo AI ครับ มีอะไรให้ช่วยอีกไหมครับ?'
+                    ];
+                }
+                
+                const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+                addMessage(randomResponse);
+            }, 1500);
+        }
+
+        function updateSendButton() {
+            const hasText = messageInput.value.trim().length > 0;
+            const hasFiles = attachedFiles.length > 0;
+            
+            if (hasText || hasFiles) {
+                sendButton.disabled = false;
+                sendButton.className = "bg-blue-600 text-white p-4 rounded-full transition hover:scale-110 transform active:scale-95 flex-shrink-0 shadow-lg hover:bg-blue-700";
+            } else {
+                sendButton.disabled = true;
+                sendButton.className = "bg-gray-700 text-gray-500 opacity-50 p-4 rounded-full transition hover:scale-110 transform active:scale-95 flex-shrink-0 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg";
+            }
+        }
+
+        function autoResize() {
+            messageInput.style.height = '56px';
+            const scrollHeight = messageInput.scrollHeight;
+            const maxHeight = 120;
+            messageInput.style.height = Math.min(scrollHeight, maxHeight) + 'px';
+        }
+
+        function updateResetButton() {
+            const resetBtn = document.getElementById('resetChat');
+            if (hasUserSentMessage) {
+                resetBtn.disabled = false;
+                resetBtn.className = "reset-btn w-full px-4 py-2 text-left hover:bg-gray-100 transition-colors flex items-center space-x-3 text-gray-700 hover-smooth";
+            } else {
+                resetBtn.disabled = true;
+                resetBtn.className = "reset-btn w-full px-4 py-2 text-left hover:bg-gray-100 transition-colors flex items-center space-x-3 text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-gray-700";
+            }
+        }
+
+        // Menu functionality
+        menuButton.addEventListener('click', (e) => {
+            e.stopPropagation();
+            menuDropdown.classList.toggle('show');
+        });
+
+        // Close menu when clicking outside
+        document.addEventListener('click', () => {
+            menuDropdown.classList.remove('show');
+        });
+
+        // Chat history management
+        let chatHistoryData = [];
+        let hasUserSentMessage = false;
+        let attachedFiles = [];
+
+        // Initialize chat history data safely
+        function initializeChatHistory() {
+            try {
+                const stored = localStorage.getItem('sparkTopoChatHistory');
+                chatHistoryData = stored ? JSON.parse(stored) : [];
+                
+                // Validate data structure
+                chatHistoryData = chatHistoryData.filter(chat => 
+                    chat && 
+                    chat.timestamp && 
+                    chat.messages && 
+                    Array.isArray(chat.messages) &&
+                    typeof chat.timestamp === 'number'
+                );
+            } catch (error) {
+                console.error('Error loading chat history:', error);
+                chatHistoryData = [];
+                localStorage.removeItem('sparkTopoChatHistory');
+            }
+        }
+
+        // Clean old chat history (older than 15 days)
+        function cleanOldChatHistory() {
+            try {
+                const fifteenDaysAgo = Date.now() - (15 * 24 * 60 * 60 * 1000);
+                const originalLength = chatHistoryData.length;
+                chatHistoryData = chatHistoryData.filter(chat => chat.timestamp > fifteenDaysAgo);
+                
+                if (originalLength !== chatHistoryData.length) {
+                    localStorage.setItem('sparkTopoChatHistory', JSON.stringify(chatHistoryData));
+                    console.log(`Cleaned ${originalLength - chatHistoryData.length} old chat sessions`);
+                }
+            } catch (error) {
+                console.error('Error cleaning chat history:', error);
+            }
+        }
+
+        // Initialize - load and clean old history on load
+        initializeChatHistory();
+        cleanOldChatHistory();
+
+        function saveChatHistory() {
+            try {
+                const messages = Array.from(chatContainer.querySelectorAll('.message-slide-in')).map(msg => {
+                    const isUser = msg.classList.contains('justify-end') || msg.querySelector('.bg-white');
+                    const textElement = msg.querySelector('p');
+                    const text = textElement ? textElement.textContent : '';
+                    return { text, isUser, timestamp: Date.now() };
+                }).filter(msg => msg.text.trim() !== ''); // Filter out empty messages
+                
+                // Only save if there are actual user conversations (exclude welcome message)
+                const userMessages = messages.filter(m => m.isUser);
+                if (userMessages.length > 0 && messages.length > 1) {
+                    const chatSession = {
+                        id: Date.now(),
+                        timestamp: Date.now(),
+                        messages: messages,
+                        preview: userMessages[0]?.text.substring(0, 50) + '...' || 'การสนทนาใหม่'
+                    };
+                    chatHistoryData.unshift(chatSession);
+                    
+                    // Keep only last 50 chat sessions to prevent storage overflow
+                    if (chatHistoryData.length > 50) {
+                        chatHistoryData = chatHistoryData.slice(0, 50);
+                    }
+                    
+                    localStorage.setItem('sparkTopoChatHistory', JSON.stringify(chatHistoryData));
+                }
+            } catch (error) {
+                console.error('Error saving chat history:', error);
+            }
+        }
+
+        function loadChatHistory() {
+            // Clean old history before loading
+            cleanOldChatHistory();
+            
+            historyList.innerHTML = '';
+            
+            if (chatHistoryData.length === 0) {
+                historyList.innerHTML = `
+                    <div class="text-center text-gray-400 mt-20">
+                        <svg class="w-16 h-16 mx-auto mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                        </svg>
+                        <p class="text-lg">ยังไม่มีประวัติการสนทนา</p>
+                        <p class="text-sm mt-2">เริ่มแชทเพื่อสร้างประวัติการสนทนา</p>
+                        <p class="text-xs mt-4 opacity-70">ประวัติจะถูกเก็บไว้ 15 วัน</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            chatHistoryData.forEach(chat => {
+                const chatItem = document.createElement('div');
+                chatItem.className = 'bg-gray-800 rounded-xl p-4 mb-3 hover:bg-gray-700 transition cursor-pointer border border-gray-700 hover:border-gray-600 hover-smooth';
+                
+                // Calculate days remaining
+                const daysRemaining = Math.ceil((chat.timestamp + (15 * 24 * 60 * 60 * 1000) - Date.now()) / (24 * 60 * 60 * 1000));
+                
+                // Get last user message and last AI message
+                const userMessages = chat.messages.filter(m => m.isUser);
+                const aiMessages = chat.messages.filter(m => !m.isUser);
+                const lastUserMessage = userMessages[userMessages.length - 1]?.text || 'ไม่มีข้อความ';
+                const lastAiMessage = aiMessages[aiMessages.length - 1]?.text || 'ไม่มีข้อความ';
+                
+                // Truncate messages if too long
+                const truncateText = (text, maxLength = 40) => {
+                    return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
+                };
+                
+                chatItem.innerHTML = `
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="text-white font-medium text-base leading-tight flex-1 pr-3">
+                                ${truncateText(lastUserMessage, 50)}
+                            </h3>
+                            <span class="text-xs text-gray-400 whitespace-nowrap">${new Date(chat.timestamp).toLocaleDateString('th-TH', { 
+                                day: 'numeric',
+                                month: 'numeric',
+                                year: 'numeric'
+                            }).replace(/\//g, '/')}</span>
+                        </div>
+                        
+                        <p class="text-gray-300 text-sm leading-relaxed mb-3">
+                            ${truncateText(lastAiMessage, 60)}
+                        </p>
+                        
+                        <div class="flex justify-between items-center">
+                            <span class="bg-blue-600 text-white text-xs px-3 py-1.5 rounded-full font-medium">
+                                ${chat.messages.length} ข้อความ
+                            </span>
+                            <span class="text-xs text-orange-400">
+                                จะถูกลบอัตโนมัติใน ${daysRemaining} วัน
+                            </span>
+                        </div>
+                    </div>
+                `;
+                
+                chatItem.addEventListener('click', () => {
+                    loadChatDetail(chat);
+                });
+                
+                historyList.appendChild(chatItem);
+            });
+        }
+
+        function loadChatDetail(chat) {
+            try {
+                chatDetailTime.textContent = new Date(chat.timestamp).toLocaleString('th-TH', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+                chatDetailContent.innerHTML = '';
+                
+                if (!chat.messages || !Array.isArray(chat.messages)) {
+                    chatDetailContent.innerHTML = `
+                        <div class="text-center text-gray-400 mt-20">
+                            <p>ไม่สามารถโหลดข้อความได้</p>
+                        </div>
+                    `;
+                    showChatDetailPage();
+                    return;
+                }
+                
+                chat.messages.forEach((msg, index) => {
+                    if (!msg || typeof msg.text !== 'string') return;
+                    
+                    const messageDiv = document.createElement('div');
+                    messageDiv.className = `flex justify-${msg.isUser ? 'end' : 'start'} message-slide-in`;
+                    messageDiv.style.animationDelay = `${index * 0.1}s`;
+                    
+                    const escapedText = msg.text.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                    
+                    if (msg.isUser) {
+                        messageDiv.innerHTML = `
+                            <div class="max-w-xs md:max-w-md">
+                                <div class="bg-white rounded-3xl rounded-tr-lg px-5 py-4 shadow-lg">
+                                    <p class="text-gray-900 leading-relaxed">${escapedText}</p>
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        messageDiv.innerHTML = `
+                            <div class="max-w-xs md:max-w-md">
+                                <div class="bg-gray-800 rounded-3xl rounded-tl-lg px-5 py-4 shadow-lg border border-gray-700">
+                                    <p class="text-white leading-relaxed">${escapedText}</p>
+                                </div>
+                            </div>
+                        `;
+                    }
+                    
+                    chatDetailContent.appendChild(messageDiv);
+                });
+                
+                showChatDetailPage();
+                
+                // Smooth scroll to top of chat detail
+                setTimeout(() => {
+                    chatDetailContent.scrollTop = 0;
+                }, 100);
+                
+            } catch (error) {
+                console.error('Error loading chat detail:', error);
+                chatDetailContent.innerHTML = `
+                    <div class="text-center text-gray-400 mt-20">
+                        <p>เกิดข้อผิดพลาดในการโหลดข้อความ</p>
+                    </div>
+                `;
+                showChatDetailPage();
+            }
+        }
+
+        // Reset chat functionality
+        resetChat.addEventListener('click', () => {
+            if (!hasUserSentMessage) return;
+            
+            // Save current chat before resetting
+            saveChatHistory();
+            
+            const messages = chatContainer.querySelectorAll('.message-slide-in');
+            messages.forEach(msg => {
+                if (!msg.querySelector('.text-white')?.textContent.includes('ยินดีต้อนรับสู่ SparkTopo')) {
+                    msg.remove();
+                }
+            });
+            
+            // Reset the flag and clear attached files
+            hasUserSentMessage = false;
+            clearAttachedFiles();
+            updateResetButton();
+            menuDropdown.classList.remove('show');
+        });
+
+        sendButton.addEventListener('click', sendMessage);
+        
+        messageInput.addEventListener('input', () => {
+            autoResize();
+            updateSendButton();
+        });
+        
+        messageInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+
+        // Navigation event listeners
+        chatHistory.addEventListener('click', () => {
+            showHistoryPage();
+            menuDropdown.classList.remove('show');
+        });
+
+        backToChat.addEventListener('click', showChatPage);
+        backToHistory.addEventListener('click', showHistoryPage);
+
+        // Image attachment event listeners
+        attachButton.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file && file.type.startsWith('image/')) {
+                addAttachedFile(file);
+            }
+            // Reset file input to allow selecting the same file again
+            e.target.value = '';
+        });
+
+        // Make functions globally accessible
+        window.removeAttachedFile = removeAttachedFile;
+
+        // Initialize send button state
+        updateSendButton();
+        updateResetButton();
+
+        // Auto-scroll to bottom on load
+        setTimeout(scrollToBottom, 100);
+
+        // Set viewport height for mobile devices
+        function setViewportHeight() {
+            let vh = window.innerHeight * 0.01;
+            document.documentElement.style.setProperty('--vh', `${vh}px`);
+        }
+
+        // Set initial viewport height
+        setViewportHeight();
+
+        // Update viewport height on resize and orientation change
+        window.addEventListener('resize', setViewportHeight);
+        window.addEventListener('orientationchange', () => {
+            setTimeout(setViewportHeight, 100);
+        });
+    </script>
+    <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96132e8ee190f305',t:'MTc1Mjg1NDMyMC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();
+</script>
+</body>
+</html>
